@@ -11,7 +11,7 @@ def get_db_connection():
 
 @app.route("/")
 def home():
-    return redirect("/signup")
+    return redirect("/login")
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -31,11 +31,14 @@ def signup():
 
     return render_template("signup.html")
 
+from flask import Flask, request, jsonify
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        motdepasse = request.form["password"]
+        data = request.get_json()  # Récupérer les données JSON
+        email = data.get("email")
+        motdepasse = data.get("password")
 
         conn = get_db_connection()
         utilisateur = conn.execute(
@@ -47,11 +50,12 @@ def login():
         if utilisateur:
             session["utilisateur_id"] = utilisateur["idUtilisateur"]
             session["email"] = utilisateur["email"]
-            return redirect("/dashboard")
+            return jsonify({"success": True, "message": "Authentification réussie"})
         else:
-            return "Email ou mot de passe incorrect."
+            return jsonify({"error": "Email ou mot de passe incorrect."})
 
     return render_template("login.html")
+
 
 @app.route("/dashboard")
 def dashboard():
@@ -74,6 +78,7 @@ def liste_utilisateurs():
     conn.close()
 
     return render_template("liste.html", utilisateurs=utilisateurs)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

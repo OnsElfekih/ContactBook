@@ -125,13 +125,12 @@
             }
         }
     </style>
-    <!-- Add Font Awesome for the eye icon -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <h2>Connexion</h2>
-        <form action="/login" method="post">
+        <form id="login-form" action="/login" method="post">
             <input type="email" name="email" placeholder="Email" required><br>
             <div class="password-container">
                 <input type="password" id="password" name="password" placeholder="Mot de passe" required><br>
@@ -139,6 +138,8 @@
             </div>
             <button type="submit">Se connecter</button>
             <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
+            <!-- Message d'erreur affiché ici -->
+            <div id="error-message" style="color: red; font-size: 14px; margin-top: 10px;"></div>
         </form>
     </div>
 
@@ -147,7 +148,6 @@
             const passwordField = document.getElementById("password");
             const eyeIcon = document.getElementById("togglePassword");
             
-            // Toggle the password visibility
             if (passwordField.type === "password") {
                 passwordField.type = "text";
                 eyeIcon.classList.remove("fa-eye");
@@ -158,7 +158,43 @@
                 eyeIcon.classList.add("fa-eye");
             }
         }
+
+        // Fonction pour afficher les erreurs provenant du serveur
+        function displayError(message) {
+            const errorMessageDiv = document.getElementById("error-message");
+            errorMessageDiv.innerText = message;
+        }
+
+        // Soumettre le formulaire avec validation côté serveur
+        document.querySelector("#login-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêcher la soumission du formulaire pour la démonstration
+
+            const email = document.querySelector("input[name='email']").value;
+            const password = document.querySelector("input[name='password']").value;
+
+            // Effectuer la validation côté serveur via une requête fetch (ou AJAX)
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email: email, password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    displayError(data.error);
+                } else {
+                    // Authentification réussie
+                    alert("Connexion réussie !");
+                    // Rediriger ou effectuer une autre action ici
+                    window.location.href = "/dashboard"; // Exemple de redirection
+                }
+            })
+            .catch(error => {
+                displayError("Erreur lors de la connexion. Veuillez réessayer.");
+            });
+        });
     </script>
 </body>
 </html>
-

@@ -15,12 +15,13 @@ def authentifier(email, motdepasse):
         user = cursor.fetchone()
         conn.close()
 
-        if user and user[1] == hash_motdepasse(motdepasse):
-            print("Authentification réussie")
-            return user[0]  # Retourne l'ID de l'utilisateur
-        else:
-            print("Échec de l'authentification : email ou mot de passe incorrect.")
-            return None
+        if user is None:
+            return "Email incorrect"
+        
+        if user[1] != hash_motdepasse(motdepasse):
+            return "Mot de passe incorrect"
+        
+        return "Authentification réussie", user[0]  # Retourne l'ID de l'utilisateur si authentification réussie
     except sqlite3.Error as e:
         print(f"Erreur de base de données : {e}")
-        return None
+        return "Erreur de base de données"
