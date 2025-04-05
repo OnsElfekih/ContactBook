@@ -8,7 +8,7 @@ def hash_motdepasse(motdepasse):
 def authentifier(email, motdepasse):
     """Vérifie l'authentification de l'utilisateur."""
     try:
-        conn = sqlite3.connect("carnet_contacts.db")
+        conn = sqlite3.connect("carnet_contactsN.db")
         cursor = conn.cursor()
 
         cursor.execute("SELECT idUtilisateur, motdepasse FROM utilisateurs WHERE email = ?", (email,))

@@ -1,7 +1,7 @@
 import sqlite3
 
 def ajouter_tache(contact_id, titre, description, date_limite, statut):
-    conn = sqlite3.connect("carnet_contacts.db")
+    conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO taches (contact_id, titre, description, date_limite, statut)
@@ -11,7 +11,7 @@ def ajouter_tache(contact_id, titre, description, date_limite, statut):
     conn.close()
 
 def modifier_tache(id_tache, contact_id, titre, description, date_limite, statut):
-    conn = sqlite3.connect("carnet_contacts.db")
+    conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE taches SET contact_id=?, titre=?, description=?, date_limite=?, statut=?
@@ -21,14 +21,14 @@ def modifier_tache(id_tache, contact_id, titre, description, date_limite, statut
     conn.close()
 
 def supprimer_tache(id_tache):
-    conn = sqlite3.connect("carnet_contacts.db")
+    conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("DELETE FROM taches WHERE idTache=?", (id_tache,))
     conn.commit()
     conn.close()
 
 def lister_taches(contact_id):
-    conn = sqlite3.connect("carnet_contacts.db")
+    conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM taches WHERE contact_id=?", (contact_id,))
     taches = cursor.fetchall()
@@ -36,7 +36,7 @@ def lister_taches(contact_id):
     return taches
 
 def rechercher_tache(terme, contact_id):
-    conn = sqlite3.connect("carnet_contacts.db")
+    conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT * FROM taches WHERE contact_id=? AND 

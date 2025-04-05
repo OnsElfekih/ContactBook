@@ -5,7 +5,7 @@ import sqlite3
 
 def lister_utilisateurs():
     try:
-        conn = sqlite3.connect("carnet_contacts.db")
+        conn = sqlite3.connect("carnet_contactsN.db")
         cursor = conn.cursor()
         cursor.execute("SELECT idUtilisateur, email FROM utilisateurs")
         utilisateurs = cursor.fetchall()

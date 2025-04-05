@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect("carnet_contacts.db")
+conn = sqlite3.connect("carnet_contactsN.db")
 cursor = conn.cursor()
 
 cursor.execute("""
@@ -21,22 +21,25 @@ CREATE TABLE IF NOT EXISTS contacts (
     motdepasse TEXT,
     type TEXT CHECK(type IN ('professionnelle', 'personnel')),
     favori BOOLEAN DEFAULT 0,
-    utilisateur_id INTEGER,
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id)
+    idUtilisateur INTEGER,
+    FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur)
 )
 """)
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS taches (
     idTache INTEGER PRIMARY KEY AUTOINCREMENT,
-    contact_id INTEGER,
+    idUtilisateur INTEGER,
     titre TEXT NOT NULL,
     description TEXT,
     date_limite DATE,
     statut TEXT CHECK(statut IN ('À faire', 'En cours', 'Terminé')),
-    FOREIGN KEY (contact_id) REFERENCES contacts(id)
+    idContact INTEGER,  -- Ajout de la bonne clé étrangère
+    FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur),
+    FOREIGN KEY (idContact) REFERENCES contacts(idContact)  -- Correction de la clé étrangère
 )
 """)
+
 
 conn.commit()
 conn.close()
