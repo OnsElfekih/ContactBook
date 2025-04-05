@@ -7,7 +7,7 @@ app.secret_key = "votre_clé_secrète"
 def get_db_connection():
     conn = sqlite3.connect("carnet_contactsN.db")
     conn.row_factory = sqlite3.Row
-    return conn
+    return conn 
 
 @app.route("/")
 def home():
@@ -34,7 +34,7 @@ def signup():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        data = request.get_json()  # Récupérer les données JSON
+        data = request.get_json()
         email = data.get("email")
         motdepasse = data.get("password")
 
@@ -145,12 +145,12 @@ def contacts():
     ).fetchall()
 
     nb_personnels = conn.execute(
-        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND categorie = 'personnel'",
+        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'personnel'",
         (utilisateur_id,)
     ).fetchone()[0]
 
     nb_professionnels = conn.execute(
-        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND categorie = 'professionnel'",
+        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnel'",
         (utilisateur_id,)
     ).fetchone()[0]
 
