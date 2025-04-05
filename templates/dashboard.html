@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
-        /* Global styles */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,7 +18,6 @@
             text-decoration: none;
         }
 
-        /* Navbar */
         .navbar {
             background-color: #007bff;
             color: white;
@@ -42,7 +40,7 @@
             border-radius: 25px;
             transition: background-color 0.3s ease;
             font-size: 14px;
-            margin-left: 10px; /* Space between links */
+            margin-left: 10px;
         }
 
         .navbar a:hover {
@@ -50,50 +48,42 @@
             color: white;
         }
 
-        /* Main Content */
         .main-content {
             padding: 30px;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .container {
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .card {
             background-color: white;
-            padding: 30px;
+            padding: 20px 30px;
             border-radius: 10px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
+            min-width: 250px;
             text-align: center;
         }
 
-        .container h2 {
-            font-size: 28px;
-            margin-bottom: 20px;
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
         }
 
-        .container p {
+        .card p {
+            margin: 5px 0;
             font-size: 16px;
-            margin-bottom: 30px;
-            color: #555;
+            color: #333;
         }
 
-        .button {
-            display: inline-block;
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Responsive Design */
         @media (max-width: 800px) {
             .navbar {
                 flex-direction: column;
@@ -109,11 +99,15 @@
             .main-content {
                 padding: 20px;
             }
+
+            .cards {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
     <div class="navbar">
         <h2>Bienvenue {{ email }}</h2>
         <div>
@@ -123,12 +117,24 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <div class="container">
-            <h2>Bienvenue {{ email }}</h2>
-            <p>Connexion réussie.</p>
-            <a class="button" href="/logout">Se déconnecter</a>
+        <h2>Tableau de bord</h2>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Contacts</h3>
+                <p>Personnels : {{ nb_contacts_personnels }}</p>
+                <p>Professionnels : {{ nb_contacts_professionnels }}</p>
+                <p>Total : {{ nb_contacts_total }}</p>
+            </div>
+
+            <div class="card">
+                <h3>Tâches</h3>
+                <p>À faire: {{ nb_taches_a_faire }}</p>
+                <p>En cours: {{ nb_taches_en_cours }}</p>
+                <p>Terminé: {{ nb_taches_termine }}</p>
+                <p>Total : {{ nb_taches_total }}</p>
+            </div>
         </div>
     </div>
 </body>

@@ -182,13 +182,18 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    displayError(data.error);
-                } else {
-                    // Authentification réussie
+                if (data.error === "mot_de_passe_incorrect") {
+                    displayError("Mot de passe incorrect.");
+                }
+                if (data.error === "email_incorrect") {
+                    displayError("Email incorrect.");
+                }
+                if (data.error === "email_et_mot_de_passe_incorrects") {
+                    displayError("Mot de passe et email incorrects.");
+                }
+                if (!data.error) {
                     alert("Connexion réussie !");
-                    // Rediriger ou effectuer une autre action ici
-                    window.location.href = "/dashboard"; // Exemple de redirection
+                    window.location.href = "/dashboard";
                 }
             })
             .catch(error => {

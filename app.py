@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
+from auth import authentifier, hash_motdepasse
 
 app = Flask(__name__)
 app.secret_key = "votre_clé_secrète"
@@ -36,25 +37,26 @@ from flask import Flask, request, jsonify
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        data = request.get_json()  # Récupérer les données JSON
+        data = request.get_json()
         email = data.get("email")
         motdepasse = data.get("password")
 
-        conn = get_db_connection()
-        utilisateur = conn.execute(
-            "SELECT * FROM utilisateurs WHERE email = ? AND motdepasse = ?",
-            (email, motdepasse)
-        ).fetchone()
-        conn.close()
+        resultat = authentifier(email, motdepasse)
 
-        if utilisateur:
-            session["utilisateur_id"] = utilisateur["idUtilisateur"]
-            session["email"] = utilisateur["email"]
+        if isinstance(resultat, tuple) and resultat[0] == "Authentification réussie":
+            session["utilisateur_id"] = resultat[1]
+            session["email"] = email
             return jsonify({"success": True, "message": "Authentification réussie"})
+
+        if resultat == "Email incorrect":
+            return jsonify({ "error": "email_incorrect" })
+        elif resultat == "Mot de passe incorrect":
+            return jsonify({ "error": "mot_de_passe_incorrect" })
         else:
-            return jsonify({"error": "Email ou mot de passe incorrect."})
+            return jsonify({ "error": "email_et_mot_de_passe_incorrects" })
 
     return render_template("login.html")
+
 
 
 @app.route("/dashboard")
