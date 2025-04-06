@@ -230,6 +230,23 @@ def ajouter_contact():
 
     return redirect("/contacts")
 
+@app.route("/supprimer_contact", methods=["POST"])
+def supprimer_contact():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+
+    id_contact = request.form["idContact"]
+    utilisateur_id = session["utilisateur_id"]
+
+    conn = get_db_connection()
+    conn.execute(
+        "DELETE FROM contacts WHERE idContact = ? AND idUtilisateur = ?",
+        (id_contact, utilisateur_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect("/contacts")
 
 
 if __name__ == "__main__":
