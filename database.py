@@ -18,8 +18,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     telephone TEXT NOT NULL,
     email TEXT,
     adresse TEXT,
-    motdepasse TEXT,
-    type TEXT CHECK(type IN ('professionnelle', 'personnel')),
+    type TEXT CHECK(type IN ('professionnel', 'personnel')),
     favori BOOLEAN DEFAULT 0,
     idUtilisateur INTEGER,
     FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur)

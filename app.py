@@ -158,6 +158,7 @@ def contacts():
 
     return render_template(
         "contacts.html",
+        email=session["email"],
         contacts=contacts,
         nb_contacts_personnels=nb_personnels,
         nb_contacts_professionnels=nb_professionnels,
@@ -202,6 +203,34 @@ def taches():
         nb_taches_termine=nb_termine,
         nb_taches_total=nb_a_faire + nb_en_cours + nb_termine
     )
+@app.route("/ajouter", methods=["POST"])
+def ajouter_contact():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+    
+    utilisateur_id = session["utilisateur_id"]
+    nom = request.form["nom"]
+    email = request.form["email"]
+    telephone = request.form["telephone"]
+    adresse = request.form["adresse"]
+    type_contact = request.form["type"]
+    favori = request.form["favori"]
+    
+    # Vérifier que la valeur du type est valide
+    if type_contact not in ["personnel", "professionnel"]:
+        return "Erreur : Type de contact invalide."
+
+    conn = get_db_connection()
+    conn.execute(
+        "INSERT INTO contacts (nom, email, telephone, adresse, type, favori, idUtilisateur) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (nom, email, telephone, adresse, type_contact, favori, utilisateur_id)
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect("/contacts")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
