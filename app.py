@@ -81,7 +81,7 @@ def dashboard():
     ).fetchone()[0]
 
     nb_professionnels = conn.execute(
-        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnelle'",
+        "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnel'",
         (utilisateur_id,)
     ).fetchone()[0]
 
