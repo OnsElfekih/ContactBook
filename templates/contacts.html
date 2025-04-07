@@ -268,7 +268,7 @@
                         <td>{{ contact.favori }}</td>
                         <td class="action-buttons">
                             <a href="/modifier/{{ contact.id }}" class="btn">Modifier</a>
-                            <button class="btn btn-danger" onclick="confirmerSuppression({{ contact.idContact }}, '{{ contact.nom }}')">Supprimer</button>
+                            <button class="btn btn-danger" onclick="confirmerSuppression('{{ contact.idContact }}', '{{ contact.nom }}')">Supprimer</button>
                         </td>
                     </tr>
                 {% endfor %}
