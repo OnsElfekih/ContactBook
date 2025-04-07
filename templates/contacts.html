@@ -244,6 +244,29 @@
                 
             </div>
         </div>
+        <div id="modifierModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModifier">&times;</span>
+                <h3>Modifier le Contact</h3>
+                <form id="modifierForm" method="POST" action="/modifier">
+                    <input type="hidden" name="idContact" id="modifIdContact">
+                    <input type="text" name="nom" id="modifNom" required>
+                    <input type="email" name="email" id="modifEmail" required>
+                    <input type="tel" name="telephone" id="modifTelephone" required>
+                    <input type="text" name="adresse" id="modifAdresse" required>
+                    <select name="type" id="modifType" required>
+                        <option value="personnel">Personnel</option>
+                        <option value="professionnel">Professionnel</option>
+                    </select>
+                    <select name="favori" id="modifFavori" required>
+                        <option value="oui">Favori</option>
+                        <option value="non">Non Favori</option>
+                    </select>
+                    <input type="submit" value="Modifier">
+                </form>
+            </div>
+        </div>
+        
 
         <table>
             <thead>
@@ -267,8 +290,8 @@
                         <td>{{ contact.type }}</td>
                         <td>{{ contact.favori }}</td>
                         <td class="action-buttons">
-                            <a href="/modifier/{{ contact.id }}" class="btn">Modifier</a>
-                            <button class="btn btn-danger" onclick="confirmerSuppression('{{ contact.idContact }}', '{{ contact.nom }}')">Supprimer</button>
+                            <button class="btn" onclick="ouvrirFormulaireModification('{{ contact.idContact }}', '{{ contact.nom }}', '{{ contact.email }}', '{{ contact.telephone }}', '{{ contact.adresse }}', '{{ contact.type }}', '{{ contact.favori }}')">Modifier</button>                                                  
+                          <button class="btn btn-danger" onclick="confirmerSuppression('{{ contact.idContact }}', '{{ contact.nom }}')">Supprimer</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -281,7 +304,6 @@
         var btn = document.getElementById("addContactBtn");
         var span = document.getElementById("closeModal");
         var favoriSelect = document.getElementById("favori");
-        var nomFavoriInput = document.getElementById("nomFavori");
 
         btn.onclick = function() {
             modal.style.display = "block";
@@ -296,15 +318,6 @@
                 modal.style.display = "none";
             }
         }
-
-        // Show/Hide Nom Favori based on selection
-        favoriSelect.addEventListener("change", function() {
-            if (favoriSelect.value === "non") {
-                nomFavoriInput.style.display = "none";
-            } else {
-                nomFavoriInput.style.display = "block";
-            }
-        });
     </script>
     <div id="confirmationModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
         <div style="background:white; padding:20px; border-radius:8px; text-align:center;">
@@ -327,6 +340,30 @@
             document.getElementById("confirmationModal").style.display = "none";
         });
     </script>
+    <script>
+        function ouvrirFormulaireModification(idContact, nom, email, telephone, adresse, type, favori) {
+            document.getElementById("modifIdContact").value = idContact;
+            document.getElementById("modifNom").value = nom;
+            document.getElementById("modifEmail").value = email;
+            document.getElementById("modifTelephone").value = telephone;
+            document.getElementById("modifAdresse").value = adresse;
+            document.getElementById("modifType").value = type;
+            document.getElementById("modifFavori").value = favori;
+        
+            document.getElementById("modifierModal").style.display = "block";
+        }
+        
+        document.getElementById("closeModifier").onclick = function () {
+            document.getElementById("modifierModal").style.display = "none";
+        };
+        
+        window.onclick = function (event) {
+            if (event.target == document.getElementById("modifierModal")) {
+                document.getElementById("modifierModal").style.display = "none";
+            }
+        };
+        </script>
+        
         
 
 </body>

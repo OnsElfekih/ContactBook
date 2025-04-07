@@ -248,6 +248,26 @@ def supprimer_contact():
 
     return redirect("/contacts")
 
+@app.route('/modifier', methods=['POST'])
+def modifier_contact():
+    idContact = request.form['idContact']
+    nom = request.form['nom']
+    email = request.form['email']
+    telephone = request.form['telephone']
+    adresse = request.form['adresse']
+    type_contact = request.form['type']
+    favori = request.form['favori']
+
+    conn = get_db_connection()
+    conn.execute("""
+        UPDATE contacts 
+        SET nom = ?, email = ?, telephone = ?, adresse = ?, type = ?, favori = ? 
+        WHERE idContact = ?
+    """, (nom, email, telephone, adresse, type_contact, favori, idContact))
+    conn.commit()
+    conn.close()
+
+    return redirect('/contacts')
 
 if __name__ == "__main__":
     app.run(debug=True)
