@@ -266,6 +266,11 @@
                 </form>
             </div>
         </div>
+        <!-- Section de filtrage -->
+<div style="margin-top: 20px; width: 80%;">
+    <input type="text" id="searchInput" placeholder="Rechercher par nom, email, type ou favori" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+</div>
+
         
 
         <table>
@@ -363,6 +368,31 @@
             }
         };
         </script>
+        <script>
+            document.getElementById("searchInput").addEventListener("keyup", function () {
+                var filter = this.value.toLowerCase();
+                var rows = document.querySelectorAll("tbody tr");
+        
+                rows.forEach(function (row) {
+                    var nom = row.cells[0].textContent.toLowerCase();
+                    var email = row.cells[1].textContent.toLowerCase();
+                    var type = row.cells[4].textContent.toLowerCase();
+                    var favori = row.cells[5].textContent.toLowerCase();
+        
+                    if (
+                        nom.includes(filter) ||
+                        email.includes(filter) ||
+                        type.includes(filter) ||
+                        favori.includes(filter)
+                    ) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        </script>
+        
         
         
 

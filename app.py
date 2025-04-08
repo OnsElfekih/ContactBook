@@ -197,6 +197,7 @@ def taches():
 
     return render_template(
         "taches.html",
+        email=session["email"],
         taches=taches,
         nb_taches_a_faire=nb_a_faire,
         nb_taches_en_cours=nb_en_cours,
