@@ -130,6 +130,23 @@ def liste_utilisateurs():
     # Renvoi de la liste des utilisateurs au template
     return render_template("index.html", users=utilisateurs)
 
+@app.route("/listeTaches")
+def liste_taches():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+
+    utilisateur_id = session["utilisateur_id"]
+    conn = get_db_connection()
+
+    # Fetch tasks for the logged-in user
+    taches = conn.execute(
+        "SELECT * FROM taches WHERE idUtilisateur = ?",
+        (utilisateur_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return render_template("liste_taches.html", taches=taches)
 
 @app.route("/contacts")
 def contacts():
@@ -269,6 +286,37 @@ def modifier_contact():
     conn.close()
 
     return redirect('/contacts')
+@app.route("/ajouter_tache", methods=["GET", "POST"])
+def ajouter_tache():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+    
+    if request.method == "POST":
+        # Get form data
+        titre = request.form["titre"]
+        description = request.form["description"]
+        deadline = request.form["deadline"]
+        statut = request.form["statut"]
+
+        utilisateur_id = session["utilisateur_id"]
+
+        # Validate statut
+        if statut not in ["À faire", "En cours", "Terminé"]:
+            return "Erreur : Statut de tâche invalide."
+
+        # Connect to the database and insert the task
+        conn = get_db_connection()
+        conn.execute(
+            "INSERT INTO taches (titre, description, deadline, statut, idUtilisateur) VALUES (?, ?, ?, ?, ?)",
+            (titre, description, deadline, statut, utilisateur_id)
+        )
+        conn.commit()
+        conn.close()
+
+        return redirect("/taches")
+    
+    return render_template("ajouter_tache.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)

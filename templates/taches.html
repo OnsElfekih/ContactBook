@@ -254,29 +254,26 @@
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h3>Ajouter une tâche</h3>
-        <form id="taskForm">
-            <label for="titre">Titre de la tâche:</label>
-            <input type="text" id="titre" required>
-            <div></div>
-            <label for="description">Description:</label>
-            <div></div>
-            <textarea id="description" required></textarea>
-            <div></div>
-            <label for="deadline">D.limite:</label>
-            <input type="date" id="deadline" required>
-            <div></div>
-            <label for="statut">Statut:</label>
-            <select id="statut" required>
+        <form action="/ajouter_tache" method="POST">
+            <label for="titre">Titre</label>
+            <input type="text" id="titre" name="titre" required><br>
+            
+            <label for="description">Description</label>
+            <textarea id="description" name="description" required></textarea><br>
+        
+            <label for="deadline">Date d'échéance</label>
+            <input type="date" id="deadline" name="deadline" required><br>
+            
+            <label for="statut">Statut</label>
+            <select id="statut" name="statut" required>
                 <option value="À faire">À faire</option>
                 <option value="En cours">En cours</option>
                 <option value="Terminé">Terminé</option>
-            </select>
-            <div></div>
-            <label for="taskDeadline">Date limite de la tâche:</label>
-            <input type="date" id="taskDeadline" required>
-            <div></div>
-            <button type="submit" class="submit">Ajouter la tâche</button>
+            </select><br>
+            
+            <button type="submit">Ajouter</button>
         </form>
+        
     </div>
 </div>
 
