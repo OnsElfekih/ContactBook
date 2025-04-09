@@ -21,7 +21,7 @@
         .navbar {
             background-color: #007bff;
             color: white;
-            padding: 15px 30px;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -31,16 +31,16 @@
 
         .navbar h2 {
             margin: 0;
-            font-size: 22px;
+            font-size: 24px;
         }
 
         .navbar a {
             background-color: #ffffff;
             color: #007bff;
-            padding: 10px 20px;
+            padding: 12px 25px;
             border-radius: 25px;
-            font-size: 14px;
-            margin-left: 10px;
+            font-size: 16px;
+            margin-left: 15px;
             transition: background-color 0.3s, transform 0.2s ease;
         }
 
@@ -51,7 +51,7 @@
         }
 
         .main-content {
-            padding: 30px;
+            padding: 50px 40px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -59,24 +59,24 @@
         }
 
         h3 {
-            font-size: 26px;
+            font-size: 28px;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         label {
-            font-size: 16px;
-            margin-right: 10px;
+            font-size: 18px;
+            margin-right: 15px;
             color: #555;
         }
 
         input[type="number"], select {
-            padding: 10px;
-            font-size: 16px;
+            padding: 15px;
+            font-size: 18px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            margin: 10px 0;
-            width: 200px;
+            border-radius: 10px;
+            margin: 15px 0;
+            width: 250px;
             transition: border-color 0.3s;
         }
 
@@ -85,15 +85,15 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 12px 25px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 25px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s ease;
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         button:hover {
@@ -105,30 +105,30 @@
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            grid-gap: 10px;
+            grid-gap: 15px;
             background-color: white;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 80%;
-            margin-top: 30px;
+            padding: 25px;
+            width: 85%;
+            margin-top: 40px;
         }
 
         .calendar .header {
             font-weight: bold;
             text-align: center;
-            padding: 10px 0;
+            padding: 15px 0;
             background-color: #007bff;
             color: white;
-            font-size: 16px;
+            font-size: 18px;
         }
 
         .calendar .day {
             text-align: center;
-            padding: 15px 0;
+            padding: 25px 0;
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s ease;
-            font-size: 14px;
+            font-size: 16px;
             color: #555;
         }
 
@@ -141,7 +141,7 @@
             background-color: #007bff;
             color: white;
         }
-
+        
         /* Modal styling */
         .modal {
             display: none;
@@ -162,8 +162,8 @@
             padding: 40px;
             border: 1px solid #888;
             width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
+            max-width: 500px;
+            border-radius: 15px;
         }
 
         .close {
@@ -180,6 +180,34 @@
             cursor: pointer;
         }
 
+        /* Form styles inside the modal */
+        input, select, textarea {
+            padding: 15px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 15px 0;
+            width: 250px;
+            transition: border-color 0.3s;
+        }
+
+        textarea {
+            height: 150px;
+        }
+
+        button.submit {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button.submit:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -194,7 +222,6 @@
     </div>
 
     <div class="main-content">
-
         <label for="year">Année:</label>
         <input type="number" id="year" value="2025" min="1900" max="2100">
         
@@ -218,6 +245,34 @@
 
         <div class="calendar" id="calendar">
             <!-- Calendar days will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Modal for task form -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Ajouter une tâche</h3>
+            <form id="taskForm">
+                <label for="taskTitle">Titre de la tâche:</label>
+                <input type="text" id="taskTitle" required>
+                <div></div>
+                <label for="taskDescription">Description:</label>
+                <div></div>
+                <textarea id="taskDescription" required></textarea>
+                <div></div>
+                <label for="taskDeadline">D.limite:</label>
+                <input type="date" id="taskDeadline" required>
+                <div></div>
+                <label for="taskStatus">Statut:</label>
+                <select id="taskStatus" required>
+                    <option value="À faire">À faire</option>
+                    <option value="En cours">En cours</option>
+                    <option value="Terminé">Terminé</option>
+                </select>
+<div></div>
+                <button type="submit" class="submit">Ajouter la tâche</button>
+            </form>
         </div>
     </div>
 
@@ -251,9 +306,34 @@
                 const dayCell = document.createElement('div');
                 dayCell.classList.add('day');
                 dayCell.textContent = day;
+
+                // Adding click event to open modal when a day is clicked
+                dayCell.onclick = function() {
+                    openModal(day);
+                };
+
                 calendarContainer.appendChild(dayCell);
             }
         }
+
+        function openModal(day) {
+            const modal = document.getElementById('taskModal');
+            modal.style.display = "block";
+            // You can optionally set the date as the task deadline
+            document.getElementById('taskDeadline').value = `${document.getElementById('year').value}-${parseInt(document.getElementById('month').value) + 1}-${day}`;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('taskModal');
+            modal.style.display = "none";
+        }
+
+        document.getElementById('taskForm').onsubmit = function(event) {
+            event.preventDefault();
+            // Here, you can handle form submission, e.g., send the task to the server or save locally.
+            alert('Tâche ajoutée avec succès !');
+            closeModal();
+        };
 
         generateCalendar();
     </script>
