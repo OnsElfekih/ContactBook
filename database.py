@@ -31,8 +31,9 @@ CREATE TABLE taches (
     idUtilisateur INTEGER,
     titre TEXT,
     description TEXT,
-    deadline Date,
+    deadline DATE,
     statut TEXT,
+    selectedday DATE,
     FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur)
 );
 
