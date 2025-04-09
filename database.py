@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS utilisateurs (
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS contacts (
     idContact INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
+    nom TEXT NOT NULL unique,
     telephone TEXT NOT NULL ,
     email TEXT ,
     adresse TEXT,
@@ -26,17 +26,16 @@ CREATE TABLE IF NOT EXISTS contacts (
 """)
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS taches (
+CREATE TABLE taches (
     idTache INTEGER PRIMARY KEY AUTOINCREMENT,
     idUtilisateur INTEGER,
-    titre TEXT NOT NULL,
+    titre TEXT,
     description TEXT,
-    date_limite DATE,
-    statut TEXT CHECK(statut IN ('À faire', 'En cours', 'Terminé')),
-    idContact INTEGER,  -- Ajout de la bonne clé étrangère
-    FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur),
-    FOREIGN KEY (idContact) REFERENCES contacts(idContact)  -- Correction de la clé étrangère
-)
+    deadline Date,
+    statut TEXT,
+    FOREIGN KEY (idUtilisateur) REFERENCES utilisateurs(idUtilisateur)
+);
+
 """)
 
 

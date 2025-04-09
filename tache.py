@@ -1,22 +1,22 @@
 import sqlite3
 
-def ajouter_tache(contact_id, titre, description, date_limite, statut):
+def ajouter_tache(contact_id, titre, description, deadline, statut):
     conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO taches (contact_id, titre, description, date_limite, statut)
+        INSERT INTO taches (contact_id, titre, description, deadline, statut)
         VALUES (?, ?, ?, ?, ?)
-    """, (contact_id, titre, description, date_limite, statut))
+    """, (contact_id, titre, description, deadline, statut))
     conn.commit()
     conn.close()
 
-def modifier_tache(id_tache, contact_id, titre, description, date_limite, statut):
+def modifier_tache(id_tache, contact_id, titre, description, deadline, statut):
     conn = sqlite3.connect("carnet_contactsN.db")
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE taches SET contact_id=?, titre=?, description=?, date_limite=?, statut=?
+        UPDATE taches SET contact_id=?, titre=?, description=?, deadline=?, statut=?
         WHERE idTache=?
-    """, (contact_id, titre, description, date_limite, statut, id_tache))
+    """, (contact_id, titre, description, deadline, statut, id_tache))
     conn.commit()
     conn.close()
 
