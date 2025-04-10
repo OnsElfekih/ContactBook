@@ -333,7 +333,7 @@ function generateCalendar() {
 }
 
 
-        function openModal(day) {
+function openModal(day) {
     const modal = document.getElementById('taskModal');
     modal.style.display = "block";
 
@@ -347,9 +347,26 @@ function generateCalendar() {
 
     // Mettre la date d'échéance au même jour (optionnel)
     document.getElementById('deadline').value = selectedDay;
+
+    // Récupérer les détails de la tâche depuis le serveur
+    fetch(`/get_tache?selectedday=${selectedDay}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.titre) {
+                document.getElementById('titre').value = data.titre;
+                document.getElementById('description').value = data.description;
+                document.getElementById('deadline').value = data.deadline;
+                document.getElementById('statut').value = data.statut;
+            } else {
+                // Si aucune tâche n'est trouvée, réinitialiser le formulaire
+                document.getElementById('titre').value = '';
+                document.getElementById('description').value = '';
+                document.getElementById('deadline').value = selectedDay;
+                document.getElementById('statut').value = 'À faire';
+            }
+        })
+        .catch(error => console.error('Erreur lors de la récupération de la tâche:', error));
 }
-
-
 
 
 function closeModal() {
