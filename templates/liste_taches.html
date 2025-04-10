@@ -13,6 +13,7 @@
             <tr>
                 <th>Titre</th>
                 <th>Description</th>
+                <th>Date selectionnee</th>
                 <th>Date Limite</th>
                 <th>Statut</th>
             </tr>
@@ -22,6 +23,7 @@
                 <tr>
                     <td>{{ tache['titre'] }}</td>
                     <td>{{ tache['description'] }}</td>
+                    <td>{{ tache['selectedday'] }}</td>
                     <td>{{ tache['deadline'] }}</td>
                     <td>{{ tache['statut'] }}</td>
                 </tr>
@@ -30,5 +32,6 @@
     </table>
 
     <a href="/dashboard">Retour au Dashboard</a>
+    
 </body>
 </html>

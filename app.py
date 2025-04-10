@@ -292,23 +292,21 @@ def ajouter_tache():
         return redirect("/login")
     
     if request.method == "POST":
-        # Get form data
         titre = request.form["titre"]
         description = request.form["description"]
         deadline = request.form["deadline"]
+        selectedday = request.form.get("selectedday")  # Use .get() to avoid KeyError
         statut = request.form["statut"]
 
         utilisateur_id = session["utilisateur_id"]
 
-        # Validate statut
         if statut not in ["À faire", "En cours", "Terminé"]:
             return "Erreur : Statut de tâche invalide."
 
-        # Connect to the database and insert the task
         conn = get_db_connection()
         conn.execute(
-            "INSERT INTO taches (titre, description, deadline, statut, idUtilisateur) VALUES (?, ?, ?, ?, ?)",
-            (titre, description, deadline, statut, utilisateur_id)
+            "INSERT INTO taches (titre, description, deadline, statut, selectedday, idUtilisateur) VALUES (?, ?, ?, ?, ?, ?)",
+            (titre, description, deadline, statut, selectedday, utilisateur_id)
         )
         conn.commit()
         conn.close()
@@ -316,6 +314,7 @@ def ajouter_tache():
         return redirect("/taches")
     
     return render_template("ajouter_tache.html")
+
 
 
 if __name__ == "__main__":
