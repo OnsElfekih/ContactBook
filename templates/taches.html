@@ -284,58 +284,71 @@
 
 
     <script>
-        function generateCalendar() {
-            const calendarContainer = document.getElementById('calendar');
-            const year = document.getElementById('year').value;
-            const month = document.getElementById('month').value;
+function generateCalendar() {
+    const calendarContainer = document.getElementById('calendar');
+    const year = document.getElementById('year').value;
+    const month = document.getElementById('month').value;
 
-            calendarContainer.innerHTML = '';
+    calendarContainer.innerHTML = '';
 
-            let firstDay = new Date(year, month, 1).getDay();
-            firstDay = (firstDay === 0) ? 6 : firstDay - 1;
+    let firstDay = new Date(year, month, 1).getDay();
+    firstDay = (firstDay === 0) ? 6 : firstDay - 1;
 
-            const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
+    const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
 
-            const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-            daysOfWeek.forEach(day => {
-                const headerCell = document.createElement('div');
-                headerCell.classList.add('header');
-                headerCell.textContent = day;
-                calendarContainer.appendChild(headerCell);
-            });
+    const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    daysOfWeek.forEach(day => {
+        const headerCell = document.createElement('div');
+        headerCell.classList.add('header');
+        headerCell.textContent = day;
+        calendarContainer.appendChild(headerCell);
+    });
 
-            for (let i = 0; i < firstDay; i++) {
-                const emptyCell = document.createElement('div');
-                calendarContainer.appendChild(emptyCell);
-            }
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        calendarContainer.appendChild(emptyCell);
+    }
 
-            for (let day = 1; day <= lastDate; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.classList.add('day');
-                dayCell.textContent = day;
+    // Récupérer la date sélectionnée du localStorage
+    const selectedDate = localStorage.getItem('selectedDate');
 
-                // Adding click event to open modal when a day is clicked
-                dayCell.onclick = function() {
-                    openModal(day);
-                };
+    for (let day = 1; day <= lastDate; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.classList.add('day');
+        dayCell.textContent = day;
 
-                calendarContainer.appendChild(dayCell);
-            }
+        // Vérifier si le jour est le même que celui stocké
+        const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
+        if (currentDay === selectedDate) {
+            dayCell.classList.add('selected');
         }
+
+        // Ajouter un événement pour ouvrir le modal
+        dayCell.onclick = function() {
+            openModal(day);
+        };
+
+        calendarContainer.appendChild(dayCell);
+    }
+}
+
 
         function openModal(day) {
     const modal = document.getElementById('taskModal');
     modal.style.display = "block";
 
-    // Retrieve the selected date in the format YYYY-MM-DD
-    const selectedday = `${document.getElementById('year').value}-${parseInt(document.getElementById('month').value) + 1}-${day}`;
+    const selectedDay = `${document.getElementById('year').value}-${parseInt(document.getElementById('month').value) + 1}-${day}`;
+    
+    // Stocker la date sélectionnée dans le localStorage
+    localStorage.setItem('selectedDate', selectedDay);
 
-    // Set the selected date in the modal
-    document.getElementById('selectedday').value = selectedday;
+    // Mettre la date dans le modal
+    document.getElementById('selectedday').value = selectedDay;
 
-    // Optionally set the deadline to the selected date (if needed)
-    document.getElementById('deadline').value = selectedday;
+    // Mettre la date d'échéance au même jour (optionnel)
+    document.getElementById('deadline').value = selectedDay;
 }
+
 
 
 

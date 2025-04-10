@@ -315,7 +315,48 @@ def ajouter_tache():
     
     return render_template("ajouter_tache.html")
 
+@app.route("/ttaches")
+def api_taches():
+    if "utilisateur_id" not in session:
+        return jsonify([])
 
+    utilisateur_id = session["utilisateur_id"]
+    conn = get_db_connection()
+
+    taches = conn.execute(
+        "SELECT titre, selectedday FROM taches WHERE idUtilisateur = ?",
+        (utilisateur_id,)
+    ).fetchall()
+    conn.close()
+
+    events = [
+        {
+            "title": t["titre"],
+            "start": t["selectedday"]
+        }
+        for t in taches
+    ]
+
+    return jsonify(events)
+@app.route("/supprimer_toutes_taches", methods=["POST"])
+def supprimer_toutes_taches():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+
+    utilisateur_id = session["utilisateur_id"]
+
+    # Connect to the database
+    conn = get_db_connection()
+    
+    # Delete all tasks for the current user
+    conn.execute(
+        "DELETE FROM taches WHERE idUtilisateur = ?",
+        (utilisateur_id,)
+    )
+    conn.commit()
+    conn.close()
+
+    return redirect("/taches")
 
 if __name__ == "__main__":
     app.run(debug=True)
