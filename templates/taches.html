@@ -13,11 +13,9 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
         a {
             text-decoration: none;
         }
-
         .navbar {
             background-color: #007bff;
             color: white;
@@ -28,12 +26,10 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             border-bottom: 2px solid #0056b3;
         }
-
         .navbar h2 {
             margin: 0;
             font-size: 24px;
         }
-
         .navbar a {
             background-color: #ffffff;
             color: #007bff;
@@ -43,13 +39,11 @@
             margin-left: 15px;
             transition: background-color 0.3s, transform 0.2s ease;
         }
-
         .navbar a:hover {
             background-color: #0056b3;
             color: white;
             transform: scale(1.05);
         }
-
         .main-content {
             padding: 50px 40px;
             flex-grow: 1;
@@ -57,19 +51,16 @@
             flex-direction: column;
             align-items: center;
         }
-
         h3 {
             font-size: 28px;
             color: #333;
             margin-bottom: 30px;
         }
-
         label {
             font-size: 18px;
             margin-right: 15px;
             color: #555;
         }
-
         input[type="number"], select {
             padding: 15px;
             font-size: 18px;
@@ -79,11 +70,9 @@
             width: 250px;
             transition: border-color 0.3s;
         }
-
         input[type="number"]:focus, select:focus {
             border-color: #007bff;
         }
-
         button {
             padding: 12px 25px;
             background-color: #007bff;
@@ -95,13 +84,10 @@
             transition: background-color 0.3s, transform 0.2s ease;
             margin-top: 25px;
         }
-
         button:hover {
             background-color: #0056b3;
             transform: scale(1.05);
         }
-
-        /* Calendar styling */
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -113,7 +99,6 @@
             width: 85%;
             margin-top: 40px;
         }
-
         .calendar .header {
             font-weight: bold;
             text-align: center;
@@ -122,7 +107,6 @@
             color: white;
             font-size: 18px;
         }
-
         .calendar .day {
             text-align: center;
             padding: 25px 0;
@@ -131,18 +115,14 @@
             font-size: 16px;
             color: #555;
         }
-
         .calendar .day:hover {
             background-color: #f1f1f1;
             transform: scale(1.05);
         }
-
         .calendar .day.selected {
             background-color: #007bff;
             color: white;
         }
-        
-        /* Modal styling */
         .modal {
             display: none;
             position: fixed;
@@ -155,7 +135,6 @@
             background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
         }
-
         .modal-content {
             background-color: white;
             margin: 5% auto;
@@ -165,22 +144,18 @@
             max-width: 500px;
             border-radius: 15px;
         }
-
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
-
         .close:hover,
         .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
         }
-
-        /* Form styles inside the modal */
         input, select, textarea {
             padding: 15px;
             font-size: 18px;
@@ -190,11 +165,9 @@
             width: 250px;
             transition: border-color 0.3s;
         }
-
         textarea {
             height: 150px;
         }
-
         button.submit {
             padding: 12px 25px;
             background-color: #007bff;
@@ -204,14 +177,12 @@
             font-size: 18px;
             cursor: pointer;
         }
-
         button.submit:hover {
             background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-
     <div class="navbar">
         <h2><a href="/dashboard">Bienvenue {{ email }}</a></h2>
         <div>
@@ -220,11 +191,9 @@
             <a href="/logout">Se déconnecter</a>
         </div>
     </div>
-
     <div class="main-content">
         <label for="year">Année:</label>
         <input type="number" id="year" value="2025" min="1900" max="2100">
-        
         <label for="month">Mois:</label>
         <select id="month">
             <option value="0">Janvier</option>
@@ -240,16 +209,9 @@
             <option value="10">Novembre</option>
             <option value="11">Décembre</option>
         </select>
-
         <button onclick="generateCalendar()">Générer le calendrier</button>
-
-        <div class="calendar" id="calendar">
-            <!-- Calendar days will be dynamically inserted here -->
-        </div>
+        <div class="calendar" id="calendar"></div>
     </div>
-
-    <!-- Modal for task form -->
-<!-- Modal for task form -->
 <div id="taskModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -258,44 +220,31 @@
             <!-- Date selected input -->
             <label for="selectedday">Date Sélectionnée</label>
             <input type="text" id="selectedday" name="selectedday" readonly><br>
-        
             <label for="titre">Titre</label>
             <input type="text" id="titre" name="titre" required><br>
-        
             <label for="description">Description</label>
             <textarea id="description" name="description" required></textarea><br>
-        
             <label for="deadline">Date d'échéance</label>
             <input type="date" id="deadline" name="deadline" required><br>
-        
             <label for="statut">Statut</label>
             <select id="statut" name="statut" required>
                 <option value="À faire">À faire</option>
                 <option value="En cours">En cours</option>
                 <option value="Terminé">Terminé</option>
             </select><br>
-        
             <button type="submit">Ajouter</button>
         </form>
-        
-        
     </div>
 </div>
-
-
     <script>
 function generateCalendar() {
     const calendarContainer = document.getElementById('calendar');
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
-
     calendarContainer.innerHTML = '';
-
     let firstDay = new Date(year, month, 1).getDay();
     firstDay = (firstDay === 0) ? 6 : firstDay - 1;
-
     const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
-
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     daysOfWeek.forEach(day => {
         const headerCell = document.createElement('div');
@@ -303,52 +252,32 @@ function generateCalendar() {
         headerCell.textContent = day;
         calendarContainer.appendChild(headerCell);
     });
-
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         calendarContainer.appendChild(emptyCell);
     }
-
-    // Récupérer la date sélectionnée du localStorage
     const selectedDate = localStorage.getItem('selectedDate');
-
     for (let day = 1; day <= lastDate; day++) {
         const dayCell = document.createElement('div');
         dayCell.classList.add('day');
         dayCell.textContent = day;
-
-        // Vérifier si le jour est le même que celui stocké
         const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
         if (currentDay === selectedDate) {
             dayCell.classList.add('selected');
         }
-
-        // Ajouter un événement pour ouvrir le modal
         dayCell.onclick = function() {
             openModal(day);
         };
-
         calendarContainer.appendChild(dayCell);
     }
 }
-
-
 function openModal(day) {
     const modal = document.getElementById('taskModal');
     modal.style.display = "block";
-
     const selectedDay = `${document.getElementById('year').value}-${parseInt(document.getElementById('month').value) + 1}-${day}`;
-    
-    // Stocker la date sélectionnée dans le localStorage
     localStorage.setItem('selectedDate', selectedDay);
-
-    // Mettre la date dans le modal
     document.getElementById('selectedday').value = selectedDay;
-
-    // Mettre la date d'échéance au même jour (optionnel)
     document.getElementById('deadline').value = selectedDay;
-
-    // Récupérer les détails de la tâche depuis le serveur
     fetch(`/get_tache?selectedday=${selectedDay}`)
         .then(response => response.json())
         .then(data => {
@@ -358,7 +287,6 @@ function openModal(day) {
                 document.getElementById('deadline').value = data.deadline;
                 document.getElementById('statut').value = data.statut;
             } else {
-                // Si aucune tâche n'est trouvée, réinitialiser le formulaire
                 document.getElementById('titre').value = '';
                 document.getElementById('description').value = '';
                 document.getElementById('deadline').value = selectedDay;
@@ -367,22 +295,16 @@ function openModal(day) {
         })
         .catch(error => console.error('Erreur lors de la récupération de la tâche:', error));
 }
-
-
 function closeModal() {
         const modal = document.getElementById('taskModal');
         modal.style.display = "none";
     }
-
         document.getElementById('taskForm').onsubmit = function(event) {
             event.preventDefault();
-            // Here, you can handle form submission, e.g., send the task to the server or save locally.
             alert('Tâche ajoutée avec succès !');
             closeModal();
         };
-
         generateCalendar();
     </script>
-
 </body>
 </html>

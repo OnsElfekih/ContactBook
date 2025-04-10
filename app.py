@@ -3,22 +3,18 @@ import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "votre_clé_secrète"
-
 def get_db_connection():
     conn = sqlite3.connect("carnet_contactsN.db")
     conn.row_factory = sqlite3.Row
     return conn 
-
 @app.route("/")
 def home():
     return redirect("/login")
-
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         email = request.form["email"]
         motdepasse = request.form["password"]
-
         conn = get_db_connection()
         try:
             conn.execute("INSERT INTO utilisateurs (email, motdepasse) VALUES (?, ?)", (email, motdepasse))
@@ -28,80 +24,61 @@ def signup():
             return "Erreur : cet email est déjà utilisé."
         finally:
             conn.close()
-
     return render_template("signup.html")
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         data = request.get_json()
         email = data.get("email")
         motdepasse = data.get("password")
-
         conn = get_db_connection()
         utilisateur = conn.execute(
             "SELECT * FROM utilisateurs WHERE email = ? AND motdepasse = ?",
             (email, motdepasse)
         ).fetchone()
         conn.close()
-
         if utilisateur:
             session["utilisateur_id"] = utilisateur["idUtilisateur"]
             session["email"] = utilisateur["email"]
             return jsonify({"success": True, "message": "Authentification réussie"})
         else:
             return jsonify({"error": "Email ou mot de passe incorrect."})
-
     return render_template("login.html")
-
 @app.route("/dashboard")
 def dashboard():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-
-    # Récupérer les contacts de l'utilisateur
     contacts = conn.execute(
         "SELECT * FROM contacts WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
-
-    # Récupérer les tâches de l'utilisateur
     taches = conn.execute(
         "SELECT * FROM taches WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
-
-    # Comptage des contacts et tâches
     nb_personnels = conn.execute(
         "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'personnel'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_professionnels = conn.execute(
         "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnel'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_a_faire = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'À faire'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_en_cours = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'En cours'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_termine = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'Terminé'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     conn.close()
-
     return render_template(
         "dashboard.html",
         email=session["email"],
@@ -115,64 +92,47 @@ def dashboard():
         nb_taches_termine=nb_termine,
         nb_taches_total=nb_a_faire + nb_en_cours + nb_termine
     )
-
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/login")
-
 @app.route("/liste")
 def liste_utilisateurs():
     conn = get_db_connection()
     utilisateurs = conn.execute("SELECT idUtilisateur, email,  motdepasse FROM utilisateurs").fetchall()
     conn.close()
-
-    # Renvoi de la liste des utilisateurs au template
     return render_template("index.html", users=utilisateurs)
-
 @app.route("/listeTaches")
 def liste_taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-
-    # Fetch tasks for the logged-in user
     taches = conn.execute(
         "SELECT * FROM taches WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
-
     conn.close()
-
     return render_template("liste_taches.html", taches=taches)
-
 @app.route("/contacts")
 def contacts():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-
     contacts = conn.execute(
         "SELECT * FROM contacts WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
-
     nb_personnels = conn.execute(
         "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'personnel'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_professionnels = conn.execute(
         "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnel'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     conn.close()
-
     return render_template(
         "contacts.html",
         email=session["email"],
@@ -181,37 +141,29 @@ def contacts():
         nb_contacts_professionnels=nb_professionnels,
         nb_contacts_total=nb_personnels + nb_professionnels
     )
-
 @app.route("/taches")
 def taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-
     taches = conn.execute(
         "SELECT * FROM taches WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
-
     nb_a_faire = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'à faire'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_en_cours = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'en cours'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     nb_termine = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'terminé'",
         (utilisateur_id,)
     ).fetchone()[0]
-
     conn.close()
-
     return render_template(
         "taches.html",
         email=session["email"],
@@ -225,7 +177,6 @@ def taches():
 def ajouter_contact():
     if "utilisateur_id" not in session:
         return redirect("/login")
-    
     utilisateur_id = session["utilisateur_id"]
     nom = request.form["nom"]
     email = request.form["email"]
@@ -233,11 +184,8 @@ def ajouter_contact():
     adresse = request.form["adresse"]
     type_contact = request.form["type"]
     favori = request.form["favori"]
-    
-    # Vérifier que la valeur du type est valide
     if type_contact not in ["personnel", "professionnel"]:
         return "Erreur : Type de contact invalide."
-
     conn = get_db_connection()
     conn.execute(
         "INSERT INTO contacts (nom, email, telephone, adresse, type, favori, idUtilisateur) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -245,17 +193,13 @@ def ajouter_contact():
     )
     conn.commit()
     conn.close()
-
     return redirect("/contacts")
-
 @app.route("/supprimer_contact", methods=["POST"])
 def supprimer_contact():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     id_contact = request.form["idContact"]
     utilisateur_id = session["utilisateur_id"]
-
     conn = get_db_connection()
     conn.execute(
         "DELETE FROM contacts WHERE idContact = ? AND idUtilisateur = ?",
@@ -263,9 +207,7 @@ def supprimer_contact():
     )
     conn.commit()
     conn.close()
-
     return redirect("/contacts")
-
 @app.route('/modifier', methods=['POST'])
 def modifier_contact():
     idContact = request.form['idContact']
@@ -275,7 +217,6 @@ def modifier_contact():
     adresse = request.form['adresse']
     type_contact = request.form['type']
     favori = request.form['favori']
-
     conn = get_db_connection()
     conn.execute("""
         UPDATE contacts 
@@ -284,25 +225,20 @@ def modifier_contact():
     """, (nom, email, telephone, adresse, type_contact, favori, idContact))
     conn.commit()
     conn.close()
-
     return redirect('/contacts')
 @app.route("/ajouter_tache", methods=["GET", "POST"])
 def ajouter_tache():
     if "utilisateur_id" not in session:
         return redirect("/login")
-    
     if request.method == "POST":
         titre = request.form["titre"]
         description = request.form["description"]
         deadline = request.form["deadline"]
         selectedday = request.form.get("selectedday")  # Use .get() to avoid KeyError
         statut = request.form["statut"]
-
         utilisateur_id = session["utilisateur_id"]
-
         if statut not in ["À faire", "En cours", "Terminé"]:
             return "Erreur : Statut de tâche invalide."
-
         conn = get_db_connection()
         conn.execute(
             "INSERT INTO taches (titre, description, deadline, statut, selectedday, idUtilisateur) VALUES (?, ?, ?, ?, ?, ?)",
@@ -310,25 +246,19 @@ def ajouter_tache():
         )
         conn.commit()
         conn.close()
-
         return redirect("/taches")
-    
     return render_template("ajouter_tache.html")
-
 @app.route("/ttaches")
 def api_taches():
     if "utilisateur_id" not in session:
         return jsonify([])
-
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-
     taches = conn.execute(
         "SELECT titre, selectedday FROM taches WHERE idUtilisateur = ?",
         (utilisateur_id,)
     ).fetchall()
     conn.close()
-
     events = [
         {
             "title": t["titre"],
@@ -336,28 +266,20 @@ def api_taches():
         }
         for t in taches
     ]
-
     return jsonify(events)
 @app.route("/supprimer_toutes_taches", methods=["POST"])
 def supprimer_toutes_taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
-
     utilisateur_id = session["utilisateur_id"]
-
-    # Connect to the database
     conn = get_db_connection()
-    
-    # Delete all tasks for the current user
     conn.execute(
         "DELETE FROM taches WHERE idUtilisateur = ?",
         (utilisateur_id,)
     )
     conn.commit()
     conn.close()
-
     return redirect("/taches")
-
 @app.route("/get_tache", methods=["GET"])
 def get_tache():
     selected_date = request.args.get("selectedday")  # Récupérer la date envoyée par le client
@@ -372,7 +294,5 @@ def get_tache():
             "statut": task["statut"]
         })
     return jsonify({"error": "Aucune tâche trouvée pour cette date."}), 404
-
-
 if __name__ == "__main__":
     app.run(debug=True)
