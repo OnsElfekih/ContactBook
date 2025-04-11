@@ -119,10 +119,6 @@
             background-color: #f1f1f1;
             transform: scale(1.05);
         }
-        .calendar .day.selected {
-            background-color: #007bff;
-            color: white;
-        }
         .modal {
             display: none;
             position: fixed;
@@ -180,6 +176,12 @@
         button.submit:hover {
             background-color: #0056b3;
         }
+        .day.task-day {
+    background-color: #cde5ff;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
     </style>
 </head>
 <body>
@@ -266,7 +268,7 @@
                 const dayCell = document.createElement('div');
                 dayCell.classList.add('day');
                 dayCell.textContent = day;
-                const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
+                const currentDay = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         
                 // Check if there is a task for this day
                 fetch(`/get_tache?selectedday=${currentDay}`)

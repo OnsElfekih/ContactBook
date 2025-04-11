@@ -282,14 +282,19 @@ def supprimer_toutes_taches():
     return redirect("/taches")
 @app.route("/get_tache", methods=["GET"])
 def get_tache():
+    if 'user_id' not in session:
+        return jsonify({})
+
     selectedday = request.args.get("selectedday")
+    id_utilisateur = session['user_id']
+
     conn = get_db_connection()
     task = conn.execute(
-        "SELECT * FROM taches WHERE selectedday = ?",
-        (selectedday,)
+        "SELECT * FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
+        (selectedday, id_utilisateur)
     ).fetchone()
     conn.close()
-    
+
     if task:
         return jsonify({
             "titre": task["titre"],
@@ -299,6 +304,8 @@ def get_tache():
         })
     else:
         return jsonify({})
+
+
 @app.route("/supprimer_tache", methods=["POST"])
 def supprimer_tache():
     if "utilisateur_id" not in session:
