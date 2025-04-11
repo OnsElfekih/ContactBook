@@ -244,7 +244,7 @@ function generateCalendar() {
     const calendarContainer = document.getElementById('calendar');
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
-    const selectedDates = {{ selected_dates | tojson }};
+    const selectedDates = {{ selected_dates | tojson }}; // Python rendering
     calendarContainer.innerHTML = '';
     let firstDay = new Date(year, month, 1).getDay();
     firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
@@ -274,11 +274,22 @@ function generateCalendar() {
             localStorage.setItem('selectedDate', selected);
             document.getElementById('selectedday').value = selected;
             openModal();
+            fetch(`/tache/${selected}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Erreur: Tâche non trouvée');
+                    } else {
+                        document.getElementById('titre').value = data.titre;
+                        document.getElementById('description').value = data.description;
+                        document.getElementById('deadline').value = data.deadline;
+                        document.getElementById('statut').value = data.statut;
+                    }
+                });
         });
         calendarContainer.appendChild(dayCell);
     }
 }
-
 function openModal() {
     document.getElementById('taskModal').style.display = 'block';
 }

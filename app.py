@@ -228,8 +228,6 @@ def ajouter_tache():
         conn.close()
         return redirect("/taches")
     return render_template("ajouter_tache.html")
-
-
 @app.route("/ttaches")
 def api_taches():
     if "utilisateur_id" not in session:
@@ -243,8 +241,6 @@ def api_taches():
     conn.close()
     events = [{"title": t["titre"], "start": t["selectedday"]} for t in taches]
     return jsonify(events)
-
-
 @app.route("/supprimer_toutes_taches", methods=["POST"])
 def supprimer_toutes_taches():
     if "utilisateur_id" not in session:
@@ -255,20 +251,22 @@ def supprimer_toutes_taches():
     conn.commit()
     conn.close()
     return redirect("/taches")
-
-
-@app.route("/get_tache", methods=["GET"])
-def get_tache():
+@app.route("/tache/<string:selectedday>", methods=["GET"])
+def get_tache(selectedday):
     if "utilisateur_id" not in session:
-        return jsonify({})
-    selectedday = request.args.get("selectedday")
-    id_utilisateur = session["utilisateur_id"]
+        return redirect("/login")
+    
+    utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
+    
+    # Fetch the task based on the selected day
     task = conn.execute(
-        "SELECT * FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
-        (selectedday, id_utilisateur)
+        "SELECT titre, description, deadline, statut FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
+        (selectedday, utilisateur_id)
     ).fetchone()
+    
     conn.close()
+
     if task:
         return jsonify({
             "titre": task["titre"],
@@ -276,8 +274,7 @@ def get_tache():
             "deadline": task["deadline"],
             "statut": task["statut"]
         })
-    return jsonify({})
-
+    return jsonify({"error": "Task not found."}), 404
 
 @app.route("/supprimer_tache", methods=["POST"])
 def supprimer_tache():
@@ -293,8 +290,6 @@ def supprimer_tache():
     conn.commit()
     conn.close()
     return redirect("/listeTaches")
-
-
 @app.route("/modifier_tache", methods=["GET", "POST"])
 def modifier_tache():
     if "utilisateur_id" not in session:
