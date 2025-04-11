@@ -239,19 +239,16 @@
             </form>
         </div>
     </div>
-    
     <script>
 function generateCalendar() {
     const calendarContainer = document.getElementById('calendar');
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
-    const selectedDates = {{ selected_dates | tojson }};  // Recevoir les dates depuis le backend
+    const selectedDates = {{ selected_dates | tojson }};
     calendarContainer.innerHTML = '';
-
     let firstDay = new Date(year, month, 1).getDay();
-    firstDay = (firstDay === 0) ? 6 : firstDay - 1; // Ajuster le premier jour de la semaine pour commencer à lundi
-    const lastDate = new Date(year, parseInt(month) + 1, 0).getDate(); // Dernier jour du mois
-
+    firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
+    const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     daysOfWeek.forEach(day => {
         const headerCell = document.createElement('div');
@@ -259,33 +256,25 @@ function generateCalendar() {
         headerCell.textContent = day;
         calendarContainer.appendChild(headerCell);
     });
-
-    // Créer des cases vides avant le premier jour du mois
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         calendarContainer.appendChild(emptyCell);
     }
-
     for (let day = 1; day <= lastDate; day++) {
         const dayCell = document.createElement('div');
         dayCell.classList.add('day');
         dayCell.textContent = day;
         const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
-
         const formattedDay = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-        // Vérifier si le jour est dans la liste des dates sélectionnées
         if (selectedDates.includes(formattedDay)) {
-            dayCell.classList.add('task-day');  // Ajouter la classe pour marquer le jour
+            dayCell.classList.add('task-day');
         }
-
         dayCell.addEventListener('click', () => {
             const selected = `${year}-${String(Number(month)+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             localStorage.setItem('selectedDate', selected);
             document.getElementById('selectedday').value = selected;
             openModal();
         });
-
         calendarContainer.appendChild(dayCell);
     }
 }
@@ -293,25 +282,19 @@ function generateCalendar() {
 function openModal() {
     document.getElementById('taskModal').style.display = 'block';
 }
-
 function closeModal() {
     document.getElementById('taskModal').style.display = 'none';
 }
-
-// Fermer la modale si clic en dehors du contenu
 window.onclick = function(event) {
     const modal = document.getElementById('taskModal');
     if (event.target === modal) {
         modal.style.display = "none";
     }
 };
-
-
         document.getElementById('taskForm').onsubmit = function(event) {
             event.preventDefault();
             const action = document.getElementById('taskForm').action;
             const formData = new FormData(document.getElementById('taskForm'));
-
             fetch(action, {
                 method: 'POST',
                 body: formData
@@ -320,7 +303,7 @@ window.onclick = function(event) {
             .then(data => {
                 alert('Tâche mise à jour avec succès !');
                 closeModal();
-                generateCalendar(); // Refresh calendar after task update
+                generateCalendar(); 
             })
         };
         generateCalendar();

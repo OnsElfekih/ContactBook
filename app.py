@@ -145,22 +145,14 @@ def contacts():
 def taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
-    
     conn = get_db_connection()
     cursor = conn.cursor()
     utilisateur_id = session["utilisateur_id"]
-    
-    # Récupérer toutes les dates des tâches de l'utilisateur connecté
     cursor.execute("SELECT selectedday FROM taches WHERE idUtilisateur = ?", (utilisateur_id,))
     dates_taches = cursor.fetchall()
-    
-    # Convertir les dates en une liste simple
     selected_dates = [date[0] for date in dates_taches]
-    
     conn.close()
-    
-    # Passer les dates sélectionnées au template
-    return render_template("taches.html", selected_dates=selected_dates)
+    return render_template("taches.html", email=session["email"],selected_dates=selected_dates)
 @app.route("/ajouter", methods=["POST"])
 def ajouter_contact():
     if "utilisateur_id" not in session:
