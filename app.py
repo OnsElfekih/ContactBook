@@ -141,38 +141,26 @@ def contacts():
         nb_contacts_professionnels=nb_professionnels,
         nb_contacts_total=nb_personnels + nb_professionnels
     )
-@app.route("/taches")
+@app.route("/taches", methods=["GET"])
 def taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
-    utilisateur_id = session["utilisateur_id"]
+    
     conn = get_db_connection()
-    taches = conn.execute(
-        "SELECT * FROM taches WHERE idUtilisateur = ?",
-        (utilisateur_id,)
-    ).fetchall()
-    nb_a_faire = conn.execute(
-        "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'à faire'",
-        (utilisateur_id,)
-    ).fetchone()[0]
-    nb_en_cours = conn.execute(
-        "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'en cours'",
-        (utilisateur_id,)
-    ).fetchone()[0]
-    nb_termine = conn.execute(
-        "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'terminé'",
-        (utilisateur_id,)
-    ).fetchone()[0]
+    cursor = conn.cursor()
+    utilisateur_id = session["utilisateur_id"]
+    
+    # Récupérer toutes les dates des tâches de l'utilisateur connecté
+    cursor.execute("SELECT selectedday FROM taches WHERE idUtilisateur = ?", (utilisateur_id,))
+    dates_taches = cursor.fetchall()
+    
+    # Convertir les dates en une liste simple
+    selected_dates = [date[0] for date in dates_taches]
+    
     conn.close()
-    return render_template(
-        "taches.html",
-        email=session["email"],
-        taches=taches,
-        nb_taches_a_faire=nb_a_faire,
-        nb_taches_en_cours=nb_en_cours,
-        nb_taches_termine=nb_termine,
-        nb_taches_total=nb_a_faire + nb_en_cours + nb_termine
-    )
+    
+    # Passer les dates sélectionnées au template
+    return render_template("taches.html", selected_dates=selected_dates)
 @app.route("/ajouter", methods=["POST"])
 def ajouter_contact():
     if "utilisateur_id" not in session:
@@ -234,7 +222,7 @@ def ajouter_tache():
         titre = request.form["titre"]
         description = request.form["description"]
         deadline = request.form["deadline"]
-        selectedday = request.form.get("selectedday")  # Use .get() to avoid KeyError
+        selectedday = request.form.get("selectedday")
         statut = request.form["statut"]
         utilisateur_id = session["utilisateur_id"]
         if statut not in ["À faire", "En cours", "Terminé"]:
@@ -248,6 +236,8 @@ def ajouter_tache():
         conn.close()
         return redirect("/taches")
     return render_template("ajouter_tache.html")
+
+
 @app.route("/ttaches")
 def api_taches():
     if "utilisateur_id" not in session:
@@ -259,42 +249,34 @@ def api_taches():
         (utilisateur_id,)
     ).fetchall()
     conn.close()
-    events = [
-        {
-            "title": t["titre"],
-            "start": t["selectedday"]
-        }
-        for t in taches
-    ]
+    events = [{"title": t["titre"], "start": t["selectedday"]} for t in taches]
     return jsonify(events)
+
+
 @app.route("/supprimer_toutes_taches", methods=["POST"])
 def supprimer_toutes_taches():
     if "utilisateur_id" not in session:
         return redirect("/login")
     utilisateur_id = session["utilisateur_id"]
     conn = get_db_connection()
-    conn.execute(
-        "DELETE FROM taches WHERE idUtilisateur = ?",
-        (utilisateur_id,)
-    )
+    conn.execute("DELETE FROM taches WHERE idUtilisateur = ?", (utilisateur_id,))
     conn.commit()
     conn.close()
     return redirect("/taches")
+
+
 @app.route("/get_tache", methods=["GET"])
 def get_tache():
-    if 'user_id' not in session:
+    if "utilisateur_id" not in session:
         return jsonify({})
-
     selectedday = request.args.get("selectedday")
-    id_utilisateur = session['user_id']
-
+    id_utilisateur = session["utilisateur_id"]
     conn = get_db_connection()
     task = conn.execute(
         "SELECT * FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
         (selectedday, id_utilisateur)
     ).fetchone()
     conn.close()
-
     if task:
         return jsonify({
             "titre": task["titre"],
@@ -302,8 +284,7 @@ def get_tache():
             "deadline": task["deadline"],
             "statut": task["statut"]
         })
-    else:
-        return jsonify({})
+    return jsonify({})
 
 
 @app.route("/supprimer_tache", methods=["POST"])
@@ -312,7 +293,6 @@ def supprimer_tache():
         return redirect("/login")
     id_tache = request.form["idTache"]
     utilisateur_id = session["utilisateur_id"]
-
     conn = get_db_connection()
     conn.execute(
         "DELETE FROM taches WHERE idTache = ? AND idUtilisateur = ?",
@@ -321,6 +301,8 @@ def supprimer_tache():
     conn.commit()
     conn.close()
     return redirect("/listeTaches")
+
+
 @app.route("/modifier_tache", methods=["GET", "POST"])
 def modifier_tache():
     if "utilisateur_id" not in session:
@@ -331,7 +313,7 @@ def modifier_tache():
         description = request.form["description"]
         deadline = request.form["deadline"]
         statut = request.form["statut"]
-        selectedday = request.form.get("selectedday")  # Use .get() to avoid KeyError
+        selectedday = request.form.get("selectedday")
         utilisateur_id = session["utilisateur_id"]
         if statut not in ["À faire", "En cours", "Terminé"]:
             return "Erreur : Statut de tâche invalide."
@@ -353,7 +335,8 @@ def modifier_tache():
     conn.close()
     if tache:
         return render_template("taches.html", tache=tache)
-    else:
-        return "Tâche non trouvée."
+    return "Tâche non trouvée."
+
+
 if __name__ == "__main__":
     app.run(debug=True)
