@@ -242,9 +242,11 @@ function generateCalendar() {
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
     calendarContainer.innerHTML = '';
+    
     let firstDay = new Date(year, month, 1).getDay();
     firstDay = (firstDay === 0) ? 6 : firstDay - 1;
     const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
+    
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     daysOfWeek.forEach(day => {
         const headerCell = document.createElement('div');
@@ -252,25 +254,41 @@ function generateCalendar() {
         headerCell.textContent = day;
         calendarContainer.appendChild(headerCell);
     });
+    
     for (let i = 0; i < firstDay; i++) {
         const emptyCell = document.createElement('div');
         calendarContainer.appendChild(emptyCell);
     }
+    
     const selectedDate = localStorage.getItem('selectedDate');
     for (let day = 1; day <= lastDate; day++) {
         const dayCell = document.createElement('div');
         dayCell.classList.add('day');
         dayCell.textContent = day;
         const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
+        
+        // Fetch task to see if the day has a task
+        fetch(`/get_tache?selectedday=${currentDay}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.titre) {
+                    dayCell.classList.add('selected'); // Color the day if task exists
+                }
+            })
+            .catch(error => console.error('Erreur lors de la récupération de la tâche:', error));
+        
         if (currentDay === selectedDate) {
             dayCell.classList.add('selected');
         }
+        
         dayCell.onclick = function() {
             openModal(day);
         };
+        
         calendarContainer.appendChild(dayCell);
     }
 }
+
 function openModal(day) {
     const modal = document.getElementById('taskModal');
     modal.style.display = "block";

@@ -13,9 +13,10 @@
             <tr>
                 <th>Titre</th>
                 <th>Description</th>
-                <th>Date selectionnee</th>
+                <th>Date sélectionnée</th>
                 <th>Date Limite</th>
                 <th>Statut</th>
+                <th>Actions</th> <!-- Column for delete button -->
             </tr>
         </thead>
         <tbody>
@@ -26,6 +27,13 @@
                     <td>{{ tache['selectedday'] }}</td>
                     <td>{{ tache['deadline'] }}</td>
                     <td>{{ tache['statut'] }}</td>
+                    <td>
+                        <!-- Delete button form for each task -->
+                        <form method="POST" action="/supprimer_tache">
+                            <input type="hidden" name="idTache" value="{{ tache['idTache'] }}">
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

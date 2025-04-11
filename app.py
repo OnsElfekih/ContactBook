@@ -282,10 +282,14 @@ def supprimer_toutes_taches():
     return redirect("/taches")
 @app.route("/get_tache", methods=["GET"])
 def get_tache():
-    selected_date = request.args.get("selectedday")  # Récupérer la date envoyée par le client
+    selectedday = request.args.get("selectedday")
     conn = get_db_connection()
-    task = conn.execute("SELECT * FROM taches WHERE selectedday = ?", (selected_date,)).fetchone()
+    task = conn.execute(
+        "SELECT * FROM taches WHERE selectedday = ?",
+        (selectedday,)
+    ).fetchone()
     conn.close()
+    
     if task:
         return jsonify({
             "titre": task["titre"],
@@ -293,6 +297,8 @@ def get_tache():
             "deadline": task["deadline"],
             "statut": task["statut"]
         })
-    return jsonify({"error": "Aucune tâche trouvée pour cette date."}), 404
+    else:
+        return jsonify({})
+
 if __name__ == "__main__":
     app.run(debug=True)
