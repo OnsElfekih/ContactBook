@@ -299,6 +299,22 @@ def get_tache():
         })
     else:
         return jsonify({})
+@app.route("/supprimer_tache", methods=["POST"])
+def supprimer_tache():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+    id_tache = request.form["idTache"]
+    utilisateur_id = session["utilisateur_id"]
+
+    conn = get_db_connection()
+    conn.execute(
+        "DELETE FROM taches WHERE idTache = ? AND idUtilisateur = ?",
+        (id_tache, utilisateur_id)
+    )
+    conn.commit()
+    conn.close()
+    return redirect("/listeTaches")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
