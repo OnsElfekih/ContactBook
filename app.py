@@ -314,7 +314,39 @@ def supprimer_tache():
     conn.commit()
     conn.close()
     return redirect("/listeTaches")
-
-
+@app.route("/modifier_tache", methods=["GET", "POST"])
+def modifier_tache():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+    if request.method == "POST":
+        id_tache = request.form["idTache"]
+        titre = request.form["titre"]
+        description = request.form["description"]
+        deadline = request.form["deadline"]
+        statut = request.form["statut"]
+        selectedday = request.form.get("selectedday")  # Use .get() to avoid KeyError
+        utilisateur_id = session["utilisateur_id"]
+        if statut not in ["À faire", "En cours", "Terminé"]:
+            return "Erreur : Statut de tâche invalide."
+        conn = get_db_connection()
+        conn.execute("""
+            UPDATE taches
+            SET titre = ?, description = ?, deadline = ?, statut = ?, selectedday = ?
+            WHERE idTache = ? AND idUtilisateur = ?
+        """, (titre, description, deadline, statut, selectedday, id_tache, utilisateur_id))
+        conn.commit()
+        conn.close()
+        return redirect("/taches")
+    id_tache = request.args.get("idTache")
+    conn = get_db_connection()
+    tache = conn.execute(
+        "SELECT * FROM taches WHERE idTache = ? AND idUtilisateur = ?",
+        (id_tache, session["utilisateur_id"])
+    ).fetchone()
+    conn.close()
+    if tache:
+        return render_template("taches.html", tache=tache)
+    else:
+        return "Tâche non trouvée."
 if __name__ == "__main__":
     app.run(debug=True)
