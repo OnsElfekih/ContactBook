@@ -182,6 +182,7 @@
     border-radius: 10px;
 }
 
+
     </style>
 </head>
 <body>
@@ -238,61 +239,66 @@
             </form>
         </div>
     </div>
+
     <script>
-        function generateCalendar() {
-            const calendarContainer = document.getElementById('calendar');
-            const year = document.getElementById('year').value;
-            const month = document.getElementById('month').value;
-            calendarContainer.innerHTML = '';
-        
-            let firstDay = new Date(year, month, 1).getDay();
-            firstDay = (firstDay === 0) ? 6 : firstDay - 1; // Adjust first day of week to Monday
-            const lastDate = new Date(year, parseInt(month) + 1, 0).getDate(); // Last day of the month
-        
-            const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-            daysOfWeek.forEach(day => {
-                const headerCell = document.createElement('div');
-                headerCell.classList.add('header');
-                headerCell.textContent = day;
-                calendarContainer.appendChild(headerCell);
-            });
-        
-            // Create empty cells before the first day of the month
-            for (let i = 0; i < firstDay; i++) {
-                const emptyCell = document.createElement('div');
-                calendarContainer.appendChild(emptyCell);
-            }
-        
-            const selectedDate = localStorage.getItem('selectedDate');
-            for (let day = 1; day <= lastDate; day++) {
-                const dayCell = document.createElement('div');
-                dayCell.classList.add('day');
-                dayCell.textContent = day;
-                const currentDay = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-                // Check if there is a task for this day
-                fetch(`/get_tache?selectedday=${currentDay}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.titre) {
-                            dayCell.style.backgroundColor = '#d4edda'; // Background color for days with tasks
-                        }
-                    })
-                    .catch(error => console.error('Erreur lors de la récupération de la tâche:', error));
-        
-                // Select the day
-                if (currentDay === selectedDate) {
-                    dayCell.classList.add('selected');
+function generateCalendar() {
+    const calendarContainer = document.getElementById('calendar');
+    const year = document.getElementById('year').value;
+    const month = document.getElementById('month').value;
+    calendarContainer.innerHTML = '';
+
+    let firstDay = new Date(year, month, 1).getDay();
+    firstDay = (firstDay === 0) ? 6 : firstDay - 1; // Adjust first day of the week to Monday
+    const lastDate = new Date(year, parseInt(month) + 1, 0).getDate(); // Last day of the month
+
+    const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    daysOfWeek.forEach(day => {
+        const headerCell = document.createElement('div');
+        headerCell.classList.add('header');
+        headerCell.textContent = day;
+        calendarContainer.appendChild(headerCell);
+    });
+
+    // Create empty cells before the first day of the month
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        calendarContainer.appendChild(emptyCell);
+    }
+
+    const selectedDate = localStorage.getItem('selectedDate');
+    for (let day = 1; day <= lastDate; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.classList.add('day');
+        dayCell.textContent = day;
+        const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
+
+        // Check if a task exists for this day
+        fetch(`/get_tache?selectedday=${currentDay}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.titre) {
+                    dayCell.style.backgroundColor = '#cde5ff'; // Background for days with tasks
+                    dayCell.classList.add('task-day');
                 }
-        
-                dayCell.onclick = function() {
-                    openModal(day);
-                };
-        
-                calendarContainer.appendChild(dayCell);
-            }
+            })
+            .catch(error => console.error('Error fetching task:', error));
+
+        // Check if it's the selected day
+        if (currentDay === selectedDate) {
+            dayCell.classList.add('selected');
+            dayCell.style.backgroundColor = '#007bff'; // Custom color for selected day
+            dayCell.style.color = '#fff'; // Change text color for visibility
         }
-        
+
+        dayCell.onclick = function() {
+            openModal(day);
+        };
+
+        calendarContainer.appendChild(dayCell);
+    }
+}
+
+
         function openModal(day) {
             const modal = document.getElementById('taskModal');
             modal.style.display = "block";
@@ -323,40 +329,31 @@
                 })
                 .catch(error => console.error('Erreur lors de la récupération de la tâche:', error));
         }
-        
+
         function closeModal() {
             const modal = document.getElementById('taskModal');
             modal.style.display = "none";
         }
-        
+
         document.getElementById('taskForm').onsubmit = function(event) {
             event.preventDefault();
             const action = document.getElementById('taskForm').action;
             const formData = new FormData(document.getElementById('taskForm'));
-        
+
             fetch(action, {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert('Tâche mise à jour avec succès !');
-                    closeModal();
-                    generateCalendar();  // Refresh the calendar after the task update
-                } else {
-                    alert('Erreur lors de la mise à jour de la tâche');
-                }
+                alert('Tâche mise à jour avec succès !');
+                closeModal();
+                generateCalendar(); // Refresh calendar after task update
             })
-            .catch(error => {
-                console.error('Erreur lors de la mise à jour de la tâche:', error);
-                alert('Une erreur est survenue, veuillez réessayer.');
-            });
+            .catch(error => console.error('Erreur lors de la mise à jour de la tâche:', error));
         };
-        
+
         generateCalendar();
-        </script>
-        
-    
+    </script>
 </body>
 </html> 
