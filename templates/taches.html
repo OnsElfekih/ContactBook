@@ -275,17 +275,16 @@ function generateCalendar() {
             document.getElementById('selectedday').value = selected;
             openModal();
             fetch(`/tache/${selected}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert('Erreur: Tâche non trouvée');
-                    } else {
-                        document.getElementById('titre').value = data.titre;
-                        document.getElementById('description').value = data.description;
-                        document.getElementById('deadline').value = data.deadline;
-                        document.getElementById('statut').value = data.statut;
-                    }
-                });
+    .then(response => response.json())
+    .then(data => {
+        if (!data.error) {
+            document.getElementById('titre').value = data.titre;
+            document.getElementById('description').value = data.description;
+            document.getElementById('deadline').value = data.deadline;
+            document.getElementById('statut').value = data.statut;
+        }
+    });
+
         });
         calendarContainer.appendChild(dayCell);
     }
