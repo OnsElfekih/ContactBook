@@ -244,10 +244,10 @@ function generateCalendar() {
     const calendarContainer = document.getElementById('calendar');
     const year = document.getElementById('year').value;
     const month = document.getElementById('month').value;
-    const selectedDates = {{ selected_dates | tojson }}; // Python rendering
+    const selectedDates = {{ selected_dates | tojson }};
     calendarContainer.innerHTML = '';
     let firstDay = new Date(year, month, 1).getDay();
-    firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
+    firstDay = (firstDay === 0) ? 6 : firstDay - 1;
     const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
     const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     daysOfWeek.forEach(day => {
@@ -261,39 +261,37 @@ function generateCalendar() {
         calendarContainer.appendChild(emptyCell);
     }
     for (let day = 1; day <= lastDate; day++) {
+        const dateStr = `${year}-${String(Number(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayCell = document.createElement('div');
         dayCell.classList.add('day');
-        dayCell.textContent = day;
-        const currentDay = `${year}-${parseInt(month) + 1}-${day}`;
-        const formattedDay = `${year}-${String(parseInt(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        if (selectedDates.includes(formattedDay)) {
+        if (selectedDates.includes(dateStr)) {
             dayCell.classList.add('task-day');
         }
-        dayCell.addEventListener('click', () => {
-            const selected = `${year}-${String(Number(month)+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            localStorage.setItem('selectedDate', selected);
-            document.getElementById('selectedday').value = selected;
-            openModal();
-            fetch(`/tache/${selected}`)
-    .then(response => response.json())
-    .then(data => {
-        if (!data.error) {
-            document.getElementById('titre').value = data.titre;
-            document.getElementById('description').value = data.description;
-            document.getElementById('deadline').value = data.deadline;
-            document.getElementById('statut').value = data.statut;
-        }
-    });
-
-        });
+        dayCell.textContent = day;
+        dayCell.onclick = () => openModal(dateStr, selectedDates.includes(dateStr));
         calendarContainer.appendChild(dayCell);
     }
 }
-function openModal() {
-    document.getElementById('taskModal').style.display = 'block';
+function openModal(dateStr, hasTask) {
+    const modal = document.getElementById("taskModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const form = document.getElementById("taskForm");
+    document.getElementById("selectedday").value = dateStr;
+    if (hasTask) {
+        modalTitle.textContent = "Modifier la tâche";
+        submitBtn.textContent = "Mettre à jour";
+        form.action = "/modifier_tache";
+    } else {
+        modalTitle.textContent = "Ajouter une tâche";
+        submitBtn.textContent = "Ajouter";
+        form.action = "/ajouter_tache";
+    }
+    modal.style.display = "block";
 }
+
 function closeModal() {
-    document.getElementById('taskModal').style.display = 'none';
+    document.getElementById("taskModal").style.display = "none";
 }
 window.onclick = function(event) {
     const modal = document.getElementById('taskModal');
