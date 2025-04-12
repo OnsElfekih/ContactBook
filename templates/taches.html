@@ -1,3 +1,4 @@
+supprimer tous taches:
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -235,74 +236,94 @@
                     <option value="En cours">En cours</option>
                     <option value="Terminé">Terminé</option>
                 </select><br>
-                <button type="submit" id="submitBtn" onclick="window.location.href='/taches';">Ajouter</button>
+                <button type="submit" id="submitBtn">Ajouter</button>
+                <button type="button" id="deleteBtn" style="display:none; background-color: #dc3545;">Supprimer</button>
             </form>
         </div>
     </div>
     <script>
-function generateCalendar() {
-    const calendarContainer = document.getElementById('calendar');
-    const year = document.getElementById('year').value;
-    const month = document.getElementById('month').value;
-    const selectedDates = {{ selected_dates | tojson }};
-    calendarContainer.innerHTML = '';
-    let firstDay = new Date(year, month, 1).getDay();
-    firstDay = (firstDay === 0) ? 6 : firstDay - 1;
-    const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
-    const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    daysOfWeek.forEach(day => {
-        const headerCell = document.createElement('div');
-        headerCell.classList.add('header');
-        headerCell.textContent = day;
-        calendarContainer.appendChild(headerCell);
-    });
-    for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        calendarContainer.appendChild(emptyCell);
-    }
-    for (let day = 1; day <= lastDate; day++) {
-        const dateStr = `${year}-${String(Number(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayCell = document.createElement('div');
-        dayCell.classList.add('day');
-        if (selectedDates.includes(dateStr)) {
-            dayCell.classList.add('task-day');
-        }
-        dayCell.textContent = day;
-        dayCell.onclick = () => openModal(dateStr, selectedDates.includes(dateStr));
-        calendarContainer.appendChild(dayCell);
-    }
-}
-function openModal(dateStr, hasTask) {
-    const modal = document.getElementById("taskModal");
-    const modalTitle = document.getElementById("modalTitle");
-    const submitBtn = document.getElementById("submitBtn");
-    const form = document.getElementById("taskForm");
-    document.getElementById("selectedday").value = dateStr;
-
-    if (hasTask) {
-        modalTitle.textContent = "Modifier la tâche";
-        submitBtn.textContent = "Mettre à jour";
-        form.action = "/modifier_tache";
+        document.addEventListener("DOMContentLoaded", function() {
+            function openModal(dateStr, hasTask) {
+                const modal = document.getElementById("taskModal");
+                const modalTitle = document.getElementById("modalTitle");
+                const submitBtn = document.getElementById("submitBtn");
+                const deleteBtn = document.getElementById("deleteBtn");
+                const form = document.getElementById("taskForm");
+                document.getElementById("selectedday").value = dateStr;
         
-        // Fetch the task data for the selected day
-        fetch(`/get_task?selectedday=${dateStr}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("titre").value = data.titre;
-                document.getElementById("description").value = data.description;
-                document.getElementById("deadline").value = data.deadline;
-                document.getElementById("statut").value = data.statut;
-            });
-    } else {
-        modalTitle.textContent = "Ajouter une tâche";
-        submitBtn.textContent = "Ajouter";
-        form.action = "/ajouter_tache";
+                if (hasTask) {
+                    modalTitle.textContent = "Modifier la tâche";
+                    submitBtn.textContent = "Mettre à jour";
+                    form.action = "/modifier_tache";
+                    
+                    fetch(`/get_task?selectedday=${dateStr}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            document.getElementById("titre").value = data.titre;
+                            document.getElementById("description").value = data.description;
+                            document.getElementById("deadline").value = data.deadline;
+                            document.getElementById("statut").value = data.statut;
+                        });
+        
+                    deleteBtn.style.display = "block";
+                    deleteBtn.onclick = function() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+        fetch(`/supprimer_tache?selectedday=${dateStr}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Tâche supprimée avec succès !');
+            closeModal(); // Close the modal after deletion
+            generateCalendar(); // Regenerate calendar
+        });
     }
-    modal.style.display = "block";
-}
-
-
-function closeModal() {
+};
+                } else {
+                    modalTitle.textContent = "Ajouter une tâche";
+                    submitBtn.textContent = "Ajouter";
+                    form.action = "/ajouter_tache";
+        
+                    deleteBtn.style.display = "none";
+                }
+        
+                modal.style.display = "block";
+            }
+        
+            function generateCalendar() {
+                const calendarContainer = document.getElementById('calendar');
+                const year = document.getElementById('year').value;
+                const month = document.getElementById('month').value;
+                const selectedDates = {{ selected_dates | tojson }};
+                calendarContainer.innerHTML = '';
+                let firstDay = new Date(year, month, 1).getDay();
+                firstDay = (firstDay === 0) ? 6 : firstDay - 1;
+                const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
+                const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                daysOfWeek.forEach(day => {
+                    const headerCell = document.createElement('div');
+                    headerCell.classList.add('header');
+                    headerCell.textContent = day;
+                    calendarContainer.appendChild(headerCell);
+                });
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    calendarContainer.appendChild(emptyCell);
+                }
+                for (let day = 1; day <= lastDate; day++) {
+                    const dateStr = `${year}-${String(Number(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayCell = document.createElement('div');
+                    dayCell.classList.add('day');
+                    if (selectedDates.includes(dateStr)) {
+                        dayCell.classList.add('task-day');
+                    }
+                    dayCell.textContent = day;
+                    dayCell.onclick = () => openModal(dateStr, selectedDates.includes(dateStr));
+                    calendarContainer.appendChild(dayCell);
+                }
+            };
+        
+            function closeModal() {
     document.getElementById("taskModal").style.display = "none";
 }
 window.onclick = function(event) {
@@ -311,22 +332,26 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 };
-        document.getElementById('taskForm').onsubmit = function(event) {
-            event.preventDefault();
-            const action = document.getElementById('taskForm').action;
-            const formData = new FormData(document.getElementById('taskForm'));
-            fetch(action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Tâche mise à jour avec succès !');
-                closeModal();
-                generateCalendar(); 
-            })
-        };
-        generateCalendar();
-    </script>
+        
+            document.getElementById('taskForm').onsubmit = function(event) {
+                event.preventDefault();
+                const action = document.getElementById('taskForm').action;
+                const formData = new FormData(document.getElementById('taskForm'));
+                fetch(action, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Tâche mise à jour avec succès !');
+                    closeModal();
+                    generateCalendar(); 
+                });
+            };
+        
+            generateCalendar();
+        });
+</script>
 </body>
 </html> 
+
