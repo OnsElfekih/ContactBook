@@ -275,7 +275,6 @@ def get_tache(selectedday):
             "statut": task["statut"]
         })
     return jsonify({"error": "Task not found."}), 404
-
 @app.route("/supprimer_tache", methods=["POST"])
 def supprimer_tache():
     if "utilisateur_id" not in session:
@@ -323,6 +322,29 @@ def modifier_tache():
     if tache:
         return render_template("taches.html", tache=tache)
     return "Tâche non trouvée."
+@app.route("/get_task")
+def get_task():
+    if "utilisateur_id" not in session:
+        return redirect("/login")
+    
+    selectedday = request.args.get("selectedday")
+    utilisateur_id = session["utilisateur_id"]
+
+    conn = get_db_connection()
+    task = conn.execute(
+        "SELECT * FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
+        (selectedday, utilisateur_id)
+    ).fetchone()
+    conn.close()
+
+    if task:
+        return jsonify({
+            'titre': task['titre'],
+            'description': task['description'],
+            'deadline': task['deadline'],
+            'statut': task['statut']
+        })
+    return jsonify({'error': 'Tâche non trouvée'}), 404
 
 
 if __name__ == "__main__":

@@ -278,10 +278,21 @@ function openModal(dateStr, hasTask) {
     const submitBtn = document.getElementById("submitBtn");
     const form = document.getElementById("taskForm");
     document.getElementById("selectedday").value = dateStr;
+
     if (hasTask) {
         modalTitle.textContent = "Modifier la tâche";
         submitBtn.textContent = "Mettre à jour";
         form.action = "/modifier_tache";
+        
+        // Fetch the task data for the selected day
+        fetch(`/get_task?selectedday=${dateStr}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("titre").value = data.titre;
+                document.getElementById("description").value = data.description;
+                document.getElementById("deadline").value = data.deadline;
+                document.getElementById("statut").value = data.statut;
+            });
     } else {
         modalTitle.textContent = "Ajouter une tâche";
         submitBtn.textContent = "Ajouter";
@@ -289,6 +300,7 @@ function openModal(dateStr, hasTask) {
     }
     modal.style.display = "block";
 }
+
 
 function closeModal() {
     document.getElementById("taskModal").style.display = "none";
