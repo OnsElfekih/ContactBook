@@ -268,21 +268,19 @@
                     deleteBtn.onclick = function() {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
         fetch(`/supprimer_tache?selectedday=${dateStr}`, {
-            method: 'POST',
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert('Tâche supprimée avec succès !');
-            closeModal(); // Close the modal after deletion
-            generateCalendar(); // Regenerate calendar
-        });
+            method: 'POST'
+})
+.then(response => {
+  if (response.redirected) {
+    window.location.href = response.url;
+  }
+});
     }
 };
                 } else {
                     modalTitle.textContent = "Ajouter une tâche";
                     submitBtn.textContent = "Ajouter";
                     form.action = "/ajouter_tache";
-        
                     deleteBtn.style.display = "none";
                 }
         

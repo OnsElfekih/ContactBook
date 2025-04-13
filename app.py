@@ -275,20 +275,27 @@ def get_tache(selectedday):
             "statut": task["statut"]
         })
     return jsonify({"error": "Task not found."}), 404
+
 @app.route("/supprimer_tache", methods=["POST"])
 def supprimer_tache():
     if "utilisateur_id" not in session:
         return redirect("/login")
-    id_tache = request.form["idTache"]
+
+    selectedday = request.args.get("selectedday")
     utilisateur_id = session["utilisateur_id"]
+
+    if not selectedday:
+        return "Erreur : Date de tâche non fournie", 400
+
     conn = get_db_connection()
     conn.execute(
-        "DELETE FROM taches WHERE idTache = ? AND idUtilisateur = ?",
-        (id_tache, utilisateur_id)
+        "DELETE FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
+        (selectedday, utilisateur_id)
     )
     conn.commit()
     conn.close()
-    return redirect("/listeTaches")
+    return redirect("/taches")
+
 @app.route("/modifier_tache", methods=["GET", "POST"])
 def modifier_tache():
     if "utilisateur_id" not in session:
