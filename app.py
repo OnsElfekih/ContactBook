@@ -331,27 +331,24 @@ def modifier_tache():
     return "Tâche non trouvée."
 @app.route("/get_task")
 def get_task():
-    if "utilisateur_id" not in session:
-        return redirect("/login")
-    
     selectedday = request.args.get("selectedday")
-    utilisateur_id = session["utilisateur_id"]
-
+    utilisateur_id = session.get("utilisateur_id")
     conn = get_db_connection()
-    task = conn.execute(
-        "SELECT * FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
+    tache = conn.execute(
+        "SELECT idTache, titre, description, deadline, statut FROM taches WHERE selectedday = ? AND idUtilisateur = ?",
         (selectedday, utilisateur_id)
     ).fetchone()
     conn.close()
-
-    if task:
+    if tache:
         return jsonify({
-            'titre': task['titre'],
-            'description': task['description'],
-            'deadline': task['deadline'],
-            'statut': task['statut']
+            "idTache": tache["idTache"],
+            "titre": tache["titre"],
+            "description": tache["description"],
+            "deadline": tache["deadline"],
+            "statut": tache["statut"]
         })
-    return jsonify({'error': 'Tâche non trouvée'}), 404
+    return jsonify({})
+
 
 
 if __name__ == "__main__":

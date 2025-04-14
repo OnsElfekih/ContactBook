@@ -218,6 +218,7 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <h3 id="modalTitle">Ajouter une tâche</h3>
             <form action="/ajouter_tache" method="POST" id="taskForm">
+                <input type="hidden" id="idTache" name="idTache">
                 <label for="selectedday">Date Sélectionnée</label>
                 <input type="text" id="selectedday" name="selectedday" readonly><br>
                 <label for="titre">Titre</label>
@@ -284,12 +285,14 @@
                 document.getElementById("selectedday").value = dateStr;
 
                 if (hasTask) {
+                    submitBtn.style.display = "inline-block";
                     modalTitle.textContent = "Modifier la tâche";
                     submitBtn.textContent = "Mettre à jour";
                     form.action = "/modifier_tache";
                     fetch(`/get_task?selectedday=${dateStr}`)
                         .then(response => response.json())
                         .then(data => {
+                            document.getElementById("idTache").value = data.idTache;
                             document.getElementById("titre").value = data.titre;
                             document.getElementById("description").value = data.description;
                             document.getElementById("deadline").value = data.deadline;
