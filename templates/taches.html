@@ -177,12 +177,10 @@
             background-color: #0056b3;
         }
         .day.task-day {
-    background-color: #cde5ff;
-    font-weight: bold;
-    border-radius: 10px;
-}
-
-
+            background-color: #cde5ff;
+            font-weight: bold;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -215,7 +213,6 @@
         <button id="generateCalendarButton">Générer le calendrier</button>
         <div class="calendar" id="calendar"></div>
     </div>
-
     <div id="taskModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -240,10 +237,11 @@
             </form>
         </div>
     </div>
-
     <script>
+        function closeModal() {
+             document.getElementById("taskModal").style.display = "none";
+        }
         document.addEventListener("DOMContentLoaded", function() {
-            // Generate Calendar Function
             function generateCalendar() {
                 const calendarContainer = document.getElementById('calendar');
                 const year = document.getElementById('year').value;
@@ -254,21 +252,16 @@
                 firstDay = (firstDay === 0) ? 6 : firstDay - 1;
                 const lastDate = new Date(year, parseInt(month) + 1, 0).getDate();
                 const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-
                 daysOfWeek.forEach(day => {
                     const headerCell = document.createElement('div');
                     headerCell.classList.add('header');
                     headerCell.textContent = day;
                     calendarContainer.appendChild(headerCell);
                 });
-
-                // Create empty cells for the start of the month
                 for (let i = 0; i < firstDay; i++) {
                     const emptyCell = document.createElement('div');
                     calendarContainer.appendChild(emptyCell);
                 }
-
-                // Create day cells for the calendar
                 for (let day = 1; day <= lastDate; day++) {
                     const dateStr = `${year}-${String(Number(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const dayCell = document.createElement('div');
@@ -281,11 +274,7 @@
                     calendarContainer.appendChild(dayCell);
                 }
             }
-
-            // Attach the generateCalendar function to the button
             document.getElementById('generateCalendarButton').onclick = generateCalendar;
-
-            // Open Modal Function
             function openModal(dateStr, hasTask) {
                 const modal = document.getElementById("taskModal");
                 const modalTitle = document.getElementById("modalTitle");
@@ -310,8 +299,7 @@
                     deleteBtn.onclick = function() {
                         if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
                             fetch(`/supprimer_tache?selectedday=${dateStr}`, {
-            method: 'POST'
-})
+                            method: 'POST'})
                                 .then(response => {
                                     if (response.redirected) {
                                         window.location.href = response.url;
@@ -328,13 +316,6 @@
 
                 modal.style.display = "block";
             }
-
-            // Close Modal Function
-            function closeModal() {
-                document.getElementById("taskModal").style.display = "none";
-            }
-
-            // Close Modal if clicked outside
             window.onclick = function(event) {
                 const modal = document.getElementById('taskModal');
                 if (event.target === modal) {
