@@ -15,8 +15,8 @@ cursor.execute("""
 CREATE TABLE IF NOT EXISTS contacts (
     idContact INTEGER PRIMARY KEY AUTOINCREMENT,
     nom TEXT NOT NULL unique,
-    telephone TEXT NOT NULL ,
-    email TEXT ,
+    telephone TEXT NOT NULL unique,
+    email TEXT NOT NULL unique,
     adresse TEXT,
     type TEXT CHECK(type IN ('professionnel', 'personnel')),
     favori BOOLEAN DEFAULT 0,
