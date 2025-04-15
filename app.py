@@ -348,8 +348,5 @@ def get_task():
             "statut": tache["statut"]
         })
     return jsonify({})
-
-
-
 if __name__ == "__main__":
     app.run(debug=True)
