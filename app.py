@@ -14,17 +14,20 @@ def home():
 def signup():
     if request.method == "POST":
         email = request.form["email"]
-        motdepasse = request.form["password"]
+        password = request.form["password"]
         conn = get_db_connection()
-        try:
-            conn.execute("INSERT INTO utilisateurs (email, motdepasse) VALUES (?, ?)", (email, motdepasse))
-            conn.commit()
-            return redirect("/login")
-        except:
-            return "Erreur : cet email est déjà utilisé."
-        finally:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM utilisateurs WHERE email = ?", (email,))
+        existing_user = cursor.fetchone()
+        if existing_user:
             conn.close()
+            return render_template("signup.html", erreur="Cet email est déjà utilisé")
+        cursor.execute("INSERT INTO utilisateurs (email, password) VALUES (?, ?)", (email, password))
+        conn.commit()
+        conn.close()
+        return redirect("/login")
     return render_template("signup.html")
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":

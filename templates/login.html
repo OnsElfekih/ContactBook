@@ -2,8 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Contact Form</title>
+    <title>Carnet de Contact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            width: 100%;
+        }
+
+        .eye-icon {
+            position: absolute;
+            top: 40%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777;
+        }
         body {
             margin: 0;
             padding: 0;
@@ -24,7 +41,7 @@
         .contact-card {
             background: white;
             width: 70%;
-            max-width: 900px;
+            max-width: 1000px;
             display: flex;
             border-radius: 12px;
             overflow: hidden;
@@ -118,9 +135,10 @@
                 <form id="login-form" action="/login" method="post">
                     <input type="email" name="email" placeholder="Email" required><br>
                     <div class="password-container">
-                        <input type="password" id="password" name="password" placeholder="Mot de passe" required><br>
+                        <input type="password" id="password" name="password" placeholder="Mot de passe" required>
                         <i class="fas fa-eye eye-icon" id="togglePassword" onclick="togglePassword()"></i>
                     </div>
+                    
                     <button type="submit">Se connecter</button>
                     <p>Pas encore inscrit ? <a href="/signup">Créer un compte</a></p>
                     <!-- Message d'erreur affiché ici -->
