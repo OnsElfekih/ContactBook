@@ -151,7 +151,6 @@
         function togglePassword() {
             const passwordField = document.getElementById("password");
             const eyeIcon = document.getElementById("togglePassword");
-            
             if (passwordField.type === "password") {
                 passwordField.type = "text";
                 eyeIcon.classList.remove("fa-eye");
@@ -162,21 +161,14 @@
                 eyeIcon.classList.add("fa-eye");
             }
         }
-
-        // Fonction pour afficher les erreurs provenant du serveur
         function displayError(message) {
             const errorMessageDiv = document.getElementById("error-message");
             errorMessageDiv.innerText = message;
         }
-
-        // Soumettre le formulaire avec validation côté serveur
         document.querySelector("#login-form").addEventListener("submit", function(event) {
             event.preventDefault(); // Empêcher la soumission du formulaire pour la démonstration
-
             const email = document.querySelector("input[name='email']").value;
             const password = document.querySelector("input[name='password']").value;
-
-            // Effectuer la validation côté serveur via une requête fetch (ou AJAX)
             fetch("/login", {
                 method: "POST",
                 headers: {
@@ -186,13 +178,21 @@
             })
             .then(response => response.json())
             .then(data => {
-    if (data.error) {
-        displayError(data.error);
-    } else {
-        alert("Connexion réussie !");
-        window.location.href = "/dashboard";
-    }
-})
+                if (data.error) {
+                    displayError(data.error);
+                } else {
+                    const successMessage = document.createElement("p");
+                    successMessage.innerText = "Connexion réussie !";
+                    successMessage.style.color = "green";
+                    successMessage.style.fontSize = "14px";
+                    successMessage.style.marginTop = "10px";
+                    document.getElementById("error-message").innerHTML = "";
+                    document.getElementById("error-message").appendChild(successMessage);
+                    setTimeout(() => {
+                        window.location.href = "/dashboard";
+                    }, 500);
+                }
+            })
             .catch(error => {
                 displayError("Erreur lors de la connexion. Veuillez réessayer.");
             });

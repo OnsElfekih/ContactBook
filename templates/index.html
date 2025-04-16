@@ -1,45 +1,25 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des utilisateurs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-    <h1>Liste des utilisateurs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>motdepasse</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user['idUtilisateur'] }}</td>
-                <td>{{ user['motdepasse'] }}</td>
-                <td>{{ user['email'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>motdepasse</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user['idUtilisateur'] }}</td>
+            <td>{{ user['motdepasse'] }}</td>
+            <td>{{ user['email'] }}</td>
+            <td>
+                <form method="POST" action="/supprimer_utilisateur" onsubmit="return confirm('Confirmer la suppression ?')">
+                    <input type="hidden" name="idUtilisateur" value="{{ user['idUtilisateur'] }}">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

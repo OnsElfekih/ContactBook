@@ -10,6 +10,7 @@ def get_db_connection():
 @app.route("/")
 def home():
     return redirect("/login")
+
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
@@ -22,7 +23,7 @@ def signup():
         if existing_user:
             conn.close()
             return render_template("signup.html", erreur="Cet email est déjà utilisé")
-        cursor.execute("INSERT INTO utilisateurs (email, password) VALUES (?, ?)", (email, password))
+        cursor.execute("INSERT INTO utilisateurs (email, motdepasse) VALUES (?, ?)", (email, password))
         conn.commit()
         conn.close()
         return redirect("/login")
@@ -105,6 +106,15 @@ def liste_utilisateurs():
     utilisateurs = conn.execute("SELECT idUtilisateur, email,  motdepasse FROM utilisateurs").fetchall()
     conn.close()
     return render_template("index.html", users=utilisateurs)
+@app.route("/supprimer_utilisateur", methods=["POST"])
+def supprimer_utilisateur():
+    id_utilisateur = request.form["idUtilisateur"]
+    conn = get_db_connection()
+    conn.execute("DELETE FROM utilisateurs WHERE idUtilisateur = ?", (id_utilisateur,))
+    conn.commit()
+    conn.close()
+    return redirect("/liste")
+
 @app.route("/listeTaches")
 def liste_taches():
     if "utilisateur_id" not in session:
