@@ -22,12 +22,15 @@ def signup():
         existing_user = cursor.fetchone()
         if existing_user:
             conn.close()
-            return render_template("signup.html", erreur="Cet email est déjà utilisé")
+            return render_template("signup.html", erreur="Cet email est déjà utilisé", email=email, motdepasse=password)
+        
         cursor.execute("INSERT INTO utilisateurs (email, motdepasse) VALUES (?, ?)", (email, password))
         conn.commit()
         conn.close()
-        return redirect("/login")
+        return render_template("signup.html", success="Votre compte a été créé avec succès.", email=email, motdepasse=password)
     return render_template("signup.html")
+
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
