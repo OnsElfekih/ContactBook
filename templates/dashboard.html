@@ -7,10 +7,10 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f9fc;
+            background-color: #f4f6f9;
             display: flex;
-            height: 100vh;
             flex-direction: column;
+            height: 100vh;
         }
 
         a {
@@ -24,7 +24,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .navbar h2 {
@@ -33,13 +32,12 @@
         }
 
         .navbar a {
-            background-color: #ffffff;
+            background-color: white;
             color: #007bff;
             padding: 10px 20px;
             border-radius: 25px;
-            transition: background-color 0.3s ease;
-            font-size: 14px;
             margin-left: 10px;
+            font-size: 14px;
         }
 
         .navbar a:hover {
@@ -49,10 +47,23 @@
 
         .main-content {
             padding: 30px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .welcome {
+            background-color: #e9f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .welcome h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #007bff;
         }
 
         .cards {
@@ -60,27 +71,39 @@
             gap: 20px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 30px;
         }
 
         .card {
             background-color: white;
-            padding: 20px 30px;
+            padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             min-width: 250px;
-            text-align: center;
+            flex: 1 1 300px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card h3 {
-            margin: 0 0 10px 0;
+            margin-bottom: 10px;
             font-size: 20px;
+            color: #333;
         }
 
         .card p {
-            margin: 5px 0;
+            margin: 4px 0;
             font-size: 16px;
-            color: #333;
+        }
+
+        .footer {
+            background-color: #f1f1f1;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #555;
         }
 
         @media (max-width: 800px) {
@@ -91,12 +114,6 @@
 
             .navbar a {
                 margin-top: 10px;
-                padding: 10px;
-                font-size: 14px;
-            }
-
-            .main-content {
-                padding: 20px;
             }
 
             .cards {
@@ -106,6 +123,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="navbar">
         <h2><a href="/dashboard">Bienvenue {{ email }}</a></h2>
@@ -117,17 +135,19 @@
     </div>
 
     <div class="main-content">
-        <h2>Tableau de bord</h2>
+        <div class="welcome">
+            <h1>{{ email }}, voici votre tableau de bord</h1>
+        </div>
 
         <div class="cards">
-            <div class="card">
+            <div class="card" style="border-left: 5px solid #28a745;">
                 <h3>Contacts</h3>
                 <p>Personnels : {{ nb_contacts_personnels }}</p>
                 <p>Professionnels : {{ nb_contacts_professionnels }}</p>
                 <p>Total : {{ nb_contacts_total }}</p>
             </div>
 
-            <div class="card">
+            <div class="card" style="border-left: 5px solid #ffc107;">
                 <h3>Tâches</h3>
                 <p>À faire: {{ nb_taches_a_faire }}</p>
                 <p>En cours: {{ nb_taches_en_cours }}</p>
@@ -136,4 +156,67 @@
             </div>
         </div>
     </div>
+
+    <div class="cards" style="display: flex; justify-content: space-between; width: 100%; margin-top: 30px;">
+        <div style="width: 48%; max-width: 700px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 30px;">
+            <canvas id="contactsChart"></canvas>
+        </div>
+        <div style="width: 48%; max-width: 700px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            <canvas id="tachesChart"></canvas>
+        </div>
+    </div>
+    
+
+    <!-- Import de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        window.onload = function () {
+            const contactsChart = new Chart(document.getElementById('contactsChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Personnels', 'Professionnels'],
+                    datasets: [{
+                        label: 'Nombre de contacts',
+                        data: [{{ nb_contacts_personnels }}, {{ nb_contacts_professionnels }}],
+                        backgroundColor: ['#28a745', '#007bff']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Répartition des contacts' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            const tachesChart = new Chart(document.getElementById('tachesChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['À faire', 'En cours', 'Terminé'],
+                    datasets: [{
+                        label: 'Nombre de tâches',
+                        data: [{{ nb_taches_a_faire }}, {{ nb_taches_en_cours }}, {{ nb_taches_termine }}],
+                        backgroundColor: ['#ffc107', '#17a2b8', '#28a745']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Répartition des tâches' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        };
+    </script>
+
+</body>
 </html>

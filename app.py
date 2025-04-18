@@ -70,6 +70,14 @@ def dashboard():
         "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND type = 'professionnel'",
         (utilisateur_id,)
     ).fetchone()[0]
+    nb_favori = conn.execute(
+    "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND favori = '1'",
+    (utilisateur_id,)
+).fetchone()[0]
+    nb_n_favori = conn.execute(
+    "SELECT COUNT(*) FROM contacts WHERE idUtilisateur = ? AND favori = '0'",
+    (utilisateur_id,)
+    ).fetchone()[0]
     nb_a_faire = conn.execute(
         "SELECT COUNT(*) FROM taches WHERE idUtilisateur = ? AND statut = 'À faire'",
         (utilisateur_id,)

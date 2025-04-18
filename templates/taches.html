@@ -327,22 +327,21 @@
             };
         });
     </script>
-    <script>
-        document.getElementById('taskForm').addEventListener('submit', function(e) {
-            const deadline = document.getElementById('deadline').value;
-            const today = new Date();
-            const selectedDate = new Date(deadline);
-        
-            // Réinitialiser l'heure pour éviter les erreurs liées au fuseau horaire
-            today.setHours(0, 0, 0, 0);
-            selectedDate.setHours(0, 0, 0, 0);
-        
-            if (selectedDate < today) {
-                alert("La date d'échéance ne peut pas être antérieure à aujourd’hui.");
-                e.preventDefault();
-            }
-        });
-        </script>
+<script>
+    document.getElementById('taskForm').addEventListener('submit', function(e) {
+        const deadline = new Date(document.getElementById('deadline').value);
+        const today = new Date();
+    
+        today.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+    
+        if (deadline.getTime() < today.getTime()) {
+            alert("La date d'échéance ne peut pas être antérieure à aujourd’hui.");
+            e.preventDefault();
+        }
+    });
+    </script>
+    
         
 </body>
 </html>
