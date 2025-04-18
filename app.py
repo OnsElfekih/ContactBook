@@ -15,7 +15,7 @@ def home():
 def signup():
     if request.method == "POST":
         email = request.form["email"]
-        password = request.form["password"]
+        password = request.form["motdepasse"]
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM utilisateurs WHERE email = ?", (email,))
