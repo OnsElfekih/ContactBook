@@ -202,16 +202,19 @@ def ajouter_contact():
 def supprimer_contact():
     if "utilisateur_id" not in session:
         return redirect("/login")
+
     id_contact = request.form["idContact"]
     utilisateur_id = session["utilisateur_id"]
-    conn = get_db_connection()
-    conn.execute(
-        "DELETE FROM contacts WHERE idContact = ? AND idUtilisateur = ?",
-        (id_contact, utilisateur_id)
-    )
-    conn.commit()
-    conn.close()
+
+    with sqlite3.connect("carnet_contactsN.db", timeout=10) as conn:
+        conn.execute(
+            "DELETE FROM contacts WHERE idContact = ? AND idUtilisateur = ?",
+            (id_contact, utilisateur_id)
+        )
+        conn.commit()
+
     return redirect("/contacts")
+
 @app.route('/modifier', methods=['POST'])
 def modifier_contact():
     idContact = request.form['idContact']
